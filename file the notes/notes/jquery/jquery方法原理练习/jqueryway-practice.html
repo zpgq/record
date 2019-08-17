@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<div id="dom">你好</div>
+	<script>
+		(function () {
+			// 如何全局使用jQuery
+			window.jQuery = window.$ = jQuery;
+			// 无new操作
+			function jQuery(id) {
+				return new init(id);
+			}
+			function init(id) {
+				var dom = document.getElementById(id.slice(1));
+				this[0] = dom;
+				this.length = 1;
+				return this;
+			}
+			jQuery.prototype.text = function () {
+				console.log("text");
+				// 链式调用--->指向构造函数this
+				return this;
+			}
+			// 改变原型
+			init.prototype = jQuery.prototype;
+		})();
+		console.log($("#dom").text());
+	</script>
+</body>
+</html>
