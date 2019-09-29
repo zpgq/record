@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
 </head>
+
 <body>
 	<!-- get查找 -->
 	<h1>员工查询</h1>
@@ -12,7 +14,7 @@
 	<button id="search">查询</button>
 	员工查询结果显示
 	<p id="searchResult">111</p>
-	
+
 	<!-- post添加 -->
 	<h1>员工创建</h1>
 	<label>请输入员工姓名：</label>
@@ -41,9 +43,9 @@
 					dataType: "json",
 					//传参数就是设置值 不传参数就是获取值data
 					success: function (data) {
-						if(data.success) {
+						if (data.success) {
 							$("#searchResult").html(data.msg);
-						}else{
+						} else {
 							$("#searchResult").html("出现错误：" + data.msg);
 						}
 					},
@@ -71,9 +73,9 @@
 					},
 					//传参数就是设置值 不传参数就是获取值data
 					success: function (data) {
-						if(data.success) {
+						if (data.success) {
 							$("#createResult").html(data.msg);
-						}else{
+						} else {
 							$("#createResult").html("出现错误：" + data.msg);
 						}
 					},
@@ -86,4 +88,5 @@
 		});
 	</script>
 </body>
+
 </html>

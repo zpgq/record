@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
 </head>
+
 <body>
 	<!-- get查找 -->
 	<h1>员工查询</h1>
@@ -42,19 +44,20 @@
 			// 监听请求状态
 			request.onreadytatechange = function () {
 				// 判断返回状态
-				if(request.readystate == 4) {
+				if (request.readystate == 4) {
 					// 判断服务器响应状态码
-					if(request.status == 200) {
+					if (request.status == 200) {
 						// request.resonseText就是获取报文，就是数据。
 						// 须看json数据解析及人为交互看post请求
 						document.getElementById("searchResult").innerHTML = request.responseText;
-					}else{
+					} else {
 						alert("发生错误:" + request.status);
 					}
 				}
 			}
 		}
-		//
+
+		
 		//post请求数据
 		document.getElementById("save").onclick = function () {
 			// 实例化XMLHttpRequest
@@ -63,27 +66,27 @@
 			request.open("POST", "service.php", true);
 			// 发送请求
 			var data = "name=" + document.getElementById("staffName").value
-						+ "&number=" + document.getElementById("staffnumber").value
-						+ "&sex=" + document.getElementById("staffsex").value
-						+ "&job=" + document.getElementById("staffjob").value;
+				+ "&number=" + document.getElementById("staffnumber").value
+				+ "&sex=" + document.getElementById("staffsex").value
+				+ "&job=" + document.getElementById("staffjob").value;
 			request.setRequestHeader("Content-type", "application/w-www-form-urlencoded");
 			request.send();
 			// 监听请求状态
 			request.onreadytatechange = function () {
 				// 判断返回状态
-				if(request.readystate == 4) {
+				if (request.readystate == 4) {
 					// 判断服务器响应状态码
-					if(request.status == 200) {
+					if (request.status == 200) {
 						// 解析json数据
 						var data = JSON.parse(request.responseText);
 						// 人为规定 success属性解析json数据成功 信息显示msg
-						if(data.success) {
+						if (data.success) {
 							document.getElementById("createResult").innerHTML = data.msg
-						}else{
+						} else {
 							document.getElementById("createResult").innerHTML = "出现错误" + data.msg
 						}
 						// request.resonseText就是获取报文，就是数据。
-					}else{
+					} else {
 						alert("发生错误:" + request.status);
 					}
 				}
@@ -91,4 +94,5 @@
 		}
 	</script>
 </body>
+
 </html>
