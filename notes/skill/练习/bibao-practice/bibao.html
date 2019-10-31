@@ -76,21 +76,21 @@
         // }
             // 解决内存泄漏使用立即执行函数
             // 注意就是解决传10个函数给数组所以用立即执行函数直接执行不返回函数返回值即可
-        // function test() {
-        //     arr = [];
-        //     for(var i = 0; i < 10; i++) {
-        //         (function (j) {
-        //             arr[j] = function () {
-        //                 console.log(j);
-        //             }
-        //         }(i))
-        //     }
-        //     return arr;
-        // }
-        // var myArr = test();
-        // for(var j = 0; j < 10; j ++) {
-        //     myArr[j]();
-        // }
+        function test() {
+            arr = [];
+            for(var i = 0; i < 10; i++) {
+                (function (j) {
+                    arr[j] = function () {
+                        console.log(j);
+                    }
+                }(i))
+            }
+            return arr;
+        }
+        var myArr = test();
+        for(var j = 0; j < 10; j ++) {
+            myArr[j]();
+        }
             
 
 
