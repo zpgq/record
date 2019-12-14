@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 应用闭包累加（1对1的闭包）
+        // 注意1.return位置是在里面函数的外面。
+            // 2.里面要把num打印出来才行。
+            // 3.要申请一个新的变量demo来接收他
+        // function add(){
+        //     var num = 0;
+        //     function a() {
+        //         num ++;
+        //         console.log(num);
+        //     }
+        //     return a;
+        // }
+        // var demo = add();
+        // demo();
+        // 闭包的练习（1对2的闭包）
+        // 注意1.数组的应用。
+            // 2.函数a和函数b公用一个作用域。
+        // function test() {
+        //     var num = 100;
+        //     function a() {
+        //         num ++;
+        //         console.log(num);
+        //     }
+        //     function b() {
+        //         num --;
+        //         console.log(num);
+        //     }
+        //     return [a, b];
+        // }
+        // var demo = test();
+        // demo[0]();
+        // demo[1]();
+        // 可以做缓存
+        // 注意    1.传参数进去要加""
+                // 2.可以像push一样。
+                // 3.对象属性的调用。
+        // function eater() {
+        //     var food = "";
+        //     var object = {
+        //             eat : function () {
+        //                 console.log("我吃了" + food);
+        //                 food = "";
+        //             },
+        //             push : function (myFood){
+        //                 food = myFood
+        //             }
+        //     }
+        //     return object;
+        // }
+        // var eater1 = eater();
+        // eater1.push("banana");
+        // eater1.eat();
+        // 闭包的练习（多对一,内存泄漏）
+        // function test() {
+        //     var arr = [];
+        //     for(var i = 0; i < 10; i ++) {
+        //         arr[i] = function () {
+        //             console.log(i);
+        //         }
+        //     }
+        //     return arr;
+        // }
+        // var myArr = test();
+        // for(var j = 0; j < 10; j ++) {
+        //     myArr[j]();
+        // }
+            // 解决内存泄漏使用立即执行函数
+            // 注意就是解决传10个函数给数组所以用立即执行函数直接执行不返回函数返回值即可
+        function test() {
+            arr = [];
+            for(var i = 0; i < 10; i++) {
+                (function (j) {
+                    arr[j] = function () {
+                        console.log(j);
+                    }
+                }(i))
+            }
+            return arr;
+        }
+        var myArr = test();
+        for(var j = 0; j < 10; j ++) {
+            myArr[j]();
+        }
+            
+
+
+    </script>
+</body>
+</html>

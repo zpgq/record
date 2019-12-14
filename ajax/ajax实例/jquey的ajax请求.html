@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+
+<body>
+	<!-- get查找 -->
+	<h1>员工查询</h1>
+	<label>请输入员工编号：</label>
+	<input type="text" id="keyword">
+	<button id="search">查询</button>
+	员工查询结果显示
+	<p id="searchResult">111</p>
+
+	<!-- post添加 -->
+	<h1>员工创建</h1>
+	<label>请输入员工姓名：</label>
+	<input type="text" id="staffName"><br>
+	<label>请输入员工编号：</label>
+	<input type="text" id="staffNumber"><br>
+	<label>请输入员工性别：</label>
+	<select name="" id="staffSex">
+		<option value="">男</option>
+		<option value="">女</option>
+	</select><br>
+	<label>请输入员工职位：</label>
+	<input type="text" id="staffjob"><br>
+	<button id="save">保存</button>
+	<!-- 保存的内容 -->
+	<p id="createResult">111</p>
+	<script src="jquery.js"></script>
+	<script>
+		// 初始化jquery
+		// get请求
+		$(document).ready(function () {
+			$("#search").click(function () {
+				$.ajax({
+					type: "GET",
+					url: "service.php?number=" + $("#keyword").val(),
+					dataType: "json",
+					//传参数就是设置值 不传参数就是获取值data
+					success: function (data) {
+						if (data.success) {
+							$("#searchResult").html(data.msg);
+						} else {
+							$("#searchResult").html("出现错误：" + data.msg);
+						}
+					},
+					// jqXHR就是那个响应200 404的那个
+					error: function (jqXHR) {
+						alert("发生错误：" + jqXHR.status);
+					}
+				});
+			});
+		});
+
+		// post请求
+		$(document).ready(function () {
+			$("#search").click(function () {
+				$.ajax({
+					type: "POST",
+					url: "service.php?number=" + $("#keyword").val(),
+					dataType: "json",
+					data: {
+						name: $("staffName").val,
+						number: $("staffNumber").val,
+						sex: $("staffSex").val,
+						job: $("staffjob").val,
+
+					},
+					//传参数就是设置值 不传参数就是获取值data
+					success: function (data) {
+						if (data.success) {
+							$("#createResult").html(data.msg);
+						} else {
+							$("#createResult").html("出现错误：" + data.msg);
+						}
+					},
+					// jqXHR就是那个响应200 400的那个
+					error: function (jqXHR) {
+						alert("发生错误：" + jqXHR.status);
+					}
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>
