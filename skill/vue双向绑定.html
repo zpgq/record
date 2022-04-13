@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue双向绑定</title>
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" v-model="name">
+        {{name}}
+        <input type="text" v-model="aaa">
+        {{aaa}}
+    </div>
+
+    <script>
+        // vue主题
+        function Dep() {
+            this.subs = []
+            this.pushSub = (sub) => {
+                this.subs.push(sub)
+            }
+            this.notify = () => {
+                this.subs.forEach(sub => {
+                    sub.updata()
+                })
+            }
+        }
+
+        // 订阅者 ==> 更新{{ }}的
+        function Watcher(node, name, vm) {
+            Dep.target = this; // 订阅者赋值给主题的target
+            (this.updata = () => {
+                node.nodeValue = vm.data[name];
+            })()
+            Dep.target = null;
+        }
+
+        // 文档碎片
+        function nodeToFragment(node, vm) {
+            let flag = document.createDocumentFragment();
+            let child;
+            while (child = node.firstChild) {
+                compile(child, vm);
+                flag.appendChild(child)
+            }
+            return flag;
+        }
+
+        // 解析指令
+        function compile(node, vm) {
+            let reg = /\{\{(.*)\}\}/
+            if (node.nodeType === 1) {
+                let attrs = node.attributes
+                for (let index = 0; index < attrs.length; index++) {
+                    let name = attrs[index].nodeName
+                    let value = attrs[index].nodeValue;
+                    if (name === "v-model") {
+                        node.addEventListener("input", e => {
+                            vm.data[value] = e.target.value;
+                        })
+                        node.value = vm.data[value] // input的value赋值
+                    }
+                }
+            }
+            if (node.nodeType === 3) {
+                if (reg.test(node.nodeValue)) {
+                    let value = RegExp.$1
+                    // node.nodeValue = vm.data[value]
+                    new Watcher(node, value, vm) // {{}}解析赋值
+                }
+            }
+        }
+
+        function reactNative(data, name, value) {
+            let dep = new Dep()
+            Object.defineProperty(data, name, {
+                get() {
+                    if (Dep.target) dep.pushSub(Dep.target); // 收集订阅者Dep.target
+                    return value
+                },
+                set(newValue) {
+                    if (value === newValue ) return 
+                    value = newValue;
+                    dep.notify() // 通知更新
+                }
+            })
+        }
+
+        // 重写get、set
+        function Observe(data, vm) {
+            for (const name in data) {
+                reactNative(data, name, data[name])
+            }
+        }
+
+        function Vue(options) {
+            this.data = options.data;
+            let data = this.data;
+            Observe(data, this)
+            let el = document.querySelector(options.el)
+            let dom = nodeToFragment(el, this);
+            el.appendChild(dom)
+        }
+
+        new Vue({
+            el: "#app",
+            data: {
+                name: "111",
+                aaa: "11"
+            }
+        })
+
+
+
+        // 简易双向绑定
+        // var obj = {}
+
+        // Object.defineProperty(obj, "name", {
+        //     get(value) {
+        //         return value
+        //     },
+        //     set(newValue) {
+        //         document.getElementsByTagName("input")[0].value = newValue;
+        //         document.getElementsByTagName("h1")[0].innerText = newValue;
+        //     },
+        // })
+
+        // document.querySelector("input").addEventListener("input", e => {
+        //     obj.name = document.querySelector("input").value
+        // })
+
+
+    </script>
+</body>
+
+</html>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>深度克隆</title>
 </head>
 
 <body>
@@ -17,6 +17,8 @@
                 name: "acc"
             }
         }
+        // Object.entries将对象转换成可迭代对象
+        // 原始值直接return、引用值递归循环直到为原始值
         function deepClone(object) {
             let obj = object instanceof Array ? [] : {}
             for (const [key, val] of Object.entries(object)) {
@@ -25,7 +27,6 @@
             return obj
         }
         var target = deepClone(obj)
-
     </script>
 </body>
 

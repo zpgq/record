@@ -1,0 +1,32 @@
+@uri = http://localhost:8080/
+###
+
+GET {{uri}}products
+
+###
+
+GET {{uri}}products/5ded1413ee15392ad062c045
+
+###
+
+POST {{uri}}products
+Content-Type: application/json
+
+
+{
+    "title": "产品5"
+}
+
+###
+
+PUT {{uri}}products/5ded1413ee15392ad062c045
+Content-Type: application/json
+
+{
+    "title": "产品2"
+}
+
+###
+
+DELETE {{uri}}products/5ded1b4d66b8eb0ce881f0b1
+
