@@ -41,12 +41,14 @@
      ```
      let p = new Person()
      p.__proto__ 和Object.getPrototypeOf(p)效果一样
-     p.__proto__ = obj 和Object.getPrototypeOf(p, obj)效果一样的
+     p.__proto__ = obj 和Object.setPrototypeOf(p, obj)效果一样的
      ```
    注意：
     - 对象能通过__proto__或者getPrototypeOf来访问原型, 函数只可以通过prototype来访问原型
    - getPrototypeOf只能访问到通过__proto__和setPrototypeOf设置的的属性, 不能访问到通过prototype设置的属性
-2. 属性在实例对象身上、构造函数身上、构造函数原型身上说明
+2. 原型链 ==> 实例对象.__proto__ ==> 构造函数的prototype(通过里面的__proto__连接) ==> Object.prototype ==> null
+   - 注意: prototype 也是一个对象顾也会有__proto__属性
+3. 属性在实例对象身上、构造函数身上、构造函数原型身上说明
    - 实例对象(里面的方法可以通过实例对象访问)
      - 构造函数this.属性
       ```
@@ -69,30 +71,53 @@
       class Person{} Person.prototype.age = "111"
       ```
      - 构造函数原型身上可以看到此属性
-3. new构造函数详解**原型链的基本应用**
+4. new构造函数详解**原型链的基本应用**
    ````
-   Person.prototype.lastName = "zzz" 
-   //实例对象person原型prototype身上的属性
-   function Person(age) {
-       // var this = { 
-       //     __proto__: Person.prototype 
-       // }
-       // new构造函数隐士的第一步
+   let o = new Foo("sss")
 
-       this.name = "ssss";  
-       //实例person对象自己身上的属性
-       // new构造函数的第二步
-
-       // return this
-       // new构造函数隐士的第三步
-   }
-   let person = new Person("sss")
+   var o = new Object(); // 创建一个空的实例对象
+   o.__proto__ = Foo.prototype; // 实例对象原型指向构造函数原型
+   Foo.call(o); // this指向实例对象
    `````
----
 
+## 继承模式
+1. 传统继承
+   ```
+   function Father() {}
+   Son.prototype = new Father()
+   function Son() {}
+   let son = new Son()
+   ```
+   缺点: 父函数的实例属性也会继承
+2. 借用构造函数
+   ```
+   function Father() {}
+   function Son() {
+      Father.call(this)
+   }
+   let son = new Son()
+   ```
+   缺点: 无法继承父函数原型上的属性方法, 多执行了一个函数
+3. 共享原型
+   ```
+   function Father() {}
+   function Son() {}
+   Son.prototype = Father.prototype
+   ```
+   缺点: 修改子函数原型会影响父函数的原型
+4. 圣杯模式(借用一个构造函数充当中间件)
+   ```
+   function inherit(Son, Father) {
+      function F() {}
+      F.prototype = Father.prototype;
+      Son.prototype = new F();
+      Son.prototype.constructor = Son;
+      Son.prototype.uber = Father.prototype
+   }
+   ```
 ## 运算符问题问题
    ```
-   false && console.log("a") 
+   false && console.log("a")
    ```
    // 控制台未打印
    ```
