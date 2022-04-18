@@ -115,6 +115,7 @@
       Son.prototype.uber = Father.prototype
    }
    ```
+
 ## 运算符问题问题
    ```
    false && console.log("a")
@@ -124,3 +125,7 @@
    false || console.log("a")
    ```
    // 控制台打印出a
+
+## 区分数据类型方法总结
+1. 区分数组和对象
+- isArray( [] )、Object.prototype.toString.call( [] )、[] instansof Array
