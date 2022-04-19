@@ -10,15 +10,7 @@ function parsePath(data) {
 class Watcher {
     constructor(vm, expOrFn, cb) {
         this.vm = vm;
-        // 所监听的依赖dep
-        this.deps = [];
-        this.addIds = new Set();
-
-        if(typeof expOrFn === 'function') {
-            this.getter = expOrFn
-        }else{
-            this.getter = parsePath(expOrFn);
-        }
+        this.getter = parsePath(expOrFn);
         this.cb = cb
         this.value = this.get();
     }
