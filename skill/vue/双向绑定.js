@@ -45,15 +45,28 @@ class Dep {
     }
 }
 
+function observe(value) {
+    let ob;
+    if(Object.getOwnPropertyNames('__ob__') && value.__ob__ instanceof Observe) {
+        ob = value.__ob__
+    }else{
+        ob = new Observe(value)
+    }
+    return ob
+}
 function defineReactive(data, key, val) {
     // 递归把对象处理成原始值
-    if(typeof val === 'object') {
-        new Observe(val);
-    }
+    // if(typeof val === 'object') {
+    //     new Observe(val);
+    // }
+    let childOb = observe(val); // 收集数组依赖
     const dep = new Dep()
     Object.defineProperty(data, key, {
         get() {
             dep.depend()
+            if(childOb) {
+                childOb.dep.depend() // 收集数组依赖
+            }
             return val
         },
         set(newVal) {
@@ -63,10 +76,42 @@ function defineReactive(data, key, val) {
         }
     })
 }
+function def(obj, key, val) {
+    Object.defineProperty(obj, key, {
+        value: val
+    })
+}
+const arrayMethods = Object.create(Array.prototype)
+;[
+    'push',
+]
+.forEach(method => {
+    const original = Array.prototype[method]
+    def(arrayMethods, method, function mutator(...args) {
+        const result = original.apply(this, args)
+        const ob = this.__ob__;
+        let inserted
+        switch (method) {
+            case 'push':
+                inserted = args
+                break;
+            
+        }
+        inserted && ob.dep.notify()
+        ob.dep.notify()
+        return result
+    })
+})
 class Observe {
     constructor(value) {
-        this.value = value
-        if(!Array.isArray(value)) {
+        this.value = value;
+        this.dep = new Dep();
+        typeof value === 'object' && def(value, '__ob__', this)
+
+        if(Array.isArray(value)) {
+            value.__proto__ = arrayMethods
+            this.observeArray(value)
+        }else{
             this.walk(value)
         }
     }
@@ -74,6 +119,11 @@ class Observe {
         const keys = Object.keys(obj)
         for(let i = 0; i < keys.length; i ++) {
             defineReactive(obj, keys[i], obj[keys[i]])
+        }
+    }
+    observeArray(items) {
+        for(let i = 0; i < items.length; i ++) {
+            observe(items[i])
         }
     }
 }
@@ -88,7 +138,8 @@ class Vue{
 const vm = new Vue({
     data: {
         name: 111,
-        age: 222
+        age: 222,
+        arr: [333, 444]
     }
 })
 
@@ -96,12 +147,18 @@ Vue.prototype.$watch = function(expOrFn, cb) {
     new Watcher(vm, expOrFn, cb);
 }
 
+vm.$watch('data.arr', function(oldVal, newVal) {
+    console.log('oldVal', oldVal)
+    console.log('newVal', newVal)
+})
+
 vm.$watch('data.name', function(oldVal, newVal) {
     console.log('oldVal', oldVal)
     console.log('newVal', newVal)
 })
 
 vm.data.name = 10;
+vm.data.arr.push([100, 20])
 
 
 
