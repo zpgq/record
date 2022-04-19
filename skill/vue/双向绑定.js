@@ -1,22 +1,3 @@
-class Dep {
-    constructor() {
-        this.subs = []
-    }
-    addSub(sub) {
-        this.subs.push(sub)
-    }
-    depend() {
-        if(window.target) {
-            this.addSub(window.target)
-        }
-    }
-    notify = function () {
-        const subs = this.subs.slice()
-        console.log(subs, 'subs')
-        subs.forEach(sub => sub.updata())
-    }
-}
-
 function parsePath(data) {
     const arr = data.split('.')
     return function(obj) {
@@ -26,13 +7,20 @@ function parsePath(data) {
         return obj
     }
 }
-
 class Watcher {
     constructor(vm, expOrFn, cb) {
         this.vm = vm;
-        this.getter = parsePath(expOrFn);
+        // 所监听的依赖dep
+        this.deps = [];
+        this.addIds = new Set();
+
+        if(typeof expOrFn === 'function') {
+            this.getter = expOrFn
+        }else{
+            this.getter = parsePath(expOrFn);
+        }
         this.cb = cb
-        this.value = this.get()
+        this.value = this.get();
     }
     get() {
         window.target = this
@@ -47,8 +35,29 @@ class Watcher {
     }
 }
 
+class Dep {
+    constructor() {
+        this.subs = []
+    }
+    addSub(sub) {
+        this.subs.push(sub)
+    }
+    depend() {
+        if(window.target) {
+            this.subs.push(window.target)
+        }
+    }
+    notify = function () {
+        const subs = this.subs.slice()
+        subs.forEach(sub => sub.updata())
+    }
+}
+
 function defineReactive(data, key, val) {
-    if(typeof val === 'object') new Observe(val)
+    // 递归把对象处理成原始值
+    if(typeof val === 'object') {
+        new Observe(val);
+    }
     const dep = new Dep()
     Object.defineProperty(data, key, {
         get() {
@@ -62,7 +71,6 @@ function defineReactive(data, key, val) {
         }
     })
 }
-
 class Observe {
     constructor(value) {
         this.value = value
@@ -87,17 +95,21 @@ class Vue{
 
 const vm = new Vue({
     data: {
-        name: 1,
-        age:2
+        name: 111,
+        age: 222
     }
 })
 
+Vue.prototype.$watch = function(expOrFn, cb) {
+    new Watcher(vm, expOrFn, cb);
+}
 
-new Watcher(vm, 'data.name', function(oldVal, newVal) {
+vm.$watch('data.name', function(oldVal, newVal) {
     console.log('oldVal', oldVal)
     console.log('newVal', newVal)
 })
 
-vm.data.name = 23
+vm.data.name = 10;
+
 
 
