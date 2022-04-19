@@ -46,8 +46,11 @@ class Dep {
 }
 
 function observe(value) {
+    if(typeof value !== 'object') {
+        return 
+    }
     let ob;
-    if(Object.getOwnPropertyNames('__ob__') && value.__ob__ instanceof Observe) {
+    if(value.__ob__ && value.__ob__ instanceof Observe) {
         ob = value.__ob__
     }else{
         ob = new Observe(value)
@@ -107,7 +110,6 @@ class Observe {
         this.value = value;
         this.dep = new Dep();
         typeof value === 'object' && def(value, '__ob__', this)
-
         if(Array.isArray(value)) {
             value.__proto__ = arrayMethods
             this.observeArray(value)
@@ -139,7 +141,10 @@ const vm = new Vue({
     data: {
         name: 111,
         age: 222,
-        arr: [333, 444]
+        arr: [333, 444],
+        obj: {
+            name: 'obj'
+        }
     }
 })
 
@@ -147,18 +152,20 @@ Vue.prototype.$watch = function(expOrFn, cb) {
     new Watcher(vm, expOrFn, cb);
 }
 
-vm.$watch('data.arr', function(oldVal, newVal) {
+vm.$watch('data.obj.name', function(oldVal, newVal) {
     console.log('oldVal', oldVal)
     console.log('newVal', newVal)
 })
 
-vm.$watch('data.name', function(oldVal, newVal) {
-    console.log('oldVal', oldVal)
-    console.log('newVal', newVal)
-})
+vm.data.obj.name = 222
 
-vm.data.name = 10;
-vm.data.arr.push([100, 20])
+// vm.$watch('data.name', function(oldVal, newVal) {
+//     console.log('oldVal', oldVal)
+//     console.log('newVal', newVal)
+// })
+
+// vm.data.name = 10;
+// vm.data.arr.push(1)
 
 
 
