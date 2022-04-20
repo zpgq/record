@@ -1,22 +1,66 @@
-function parsePath(data) {
-    const arr = data.split('.')
-    return function(obj) {
-        for(let i = 0; i < arr.length; i ++) {
-            obj = obj[arr[i]]
+const seen = new Set()
+function _traverse(val, seen) {
+    if(typeof val !== 'object') {
+        return
+    }
+    if(val.__ob__) {
+        const depId = val.__ob__.dep.id;
+        if(seen.has(depId)) {
+            return
         }
-        return obj
+        seen.add(depId)
+    }
+    for (const key in val) {
+        console.log('traverse==>', val[key])
+        _traverse(val[key])
     }
 }
+function traverse(val) {
+    _traverse(val, seen)
+    seen.clear()
+}
+const bailRE = /[^\w.$]/;
+function parsePath (path) {
+  if (bailRE.test(path)) {
+    return
+  }
+  const segments = path.split('.');
+  return function (obj) {
+    for (let i = 0; i < segments.length; i++) {
+      if (!obj) return
+      obj = obj[segments[i]];
+    }
+    return obj
+  }
+}
 class Watcher {
-    constructor(vm, expOrFn, cb) {
+    constructor(vm, expOrFn, cb, options = {}) {
         this.vm = vm;
-        this.getter = parsePath(expOrFn);
-        this.cb = cb
+
+        if(options.deep) {
+            this.deep = true
+        }else{
+            this.deep = false;
+        }
+
+        this.deps = []
+        this.depIds = [];
+
+        if(typeof expOrFn === 'function') {
+            this.getter = expOrFn
+        }else{
+            this.getter = parsePath(expOrFn);
+        }
+        this.cb = cb;
         this.value = this.get();
     }
     get() {
         window.target = this
         let value = this.getter.call(this.vm, this.vm)
+        // 读对象数据 收集依赖
+        if(this.deep) {
+            traverse(value, seen)
+        }
         window.target = undefined;
         return value
     }
@@ -25,10 +69,26 @@ class Watcher {
         this.value = this.get()
         this.cb.call(this.vm, oldVal, this.value)
     }
+    addDep(dep) {
+        const id = dep.id
+        if(this.depIds.indexOf(id) === -1) {
+            this.depIds.push(id)
+            this.deps.push(dep)
+            dep.addSub(this)
+        }
+    }
+    teardown() {
+        let i = this.deps.length;
+        while(i --) {
+            this.deps[i].removeSub(this)
+        }
+    }
 }
 
+let uid = 0
 class Dep {
     constructor() {
+        this.id = uid ++
         this.subs = []
     }
     addSub(sub) {
@@ -36,12 +96,18 @@ class Dep {
     }
     depend() {
         if(window.target) {
-            this.subs.push(window.target)
+            window.target.addDep(this)
         }
     }
     notify = function () {
         const subs = this.subs.slice()
         subs.forEach(sub => sub.updata())
+    }
+    removeSub(sub) {
+        const index = this.subs.indexOf(sub)
+        if(index > 1) {
+            return this.subs.splice(index, 1)
+        }
     }
 }
 
@@ -58,10 +124,6 @@ function observe(value) {
     return ob
 }
 function defineReactive(data, key, val) {
-    // 递归把对象处理成原始值
-    // if(typeof val === 'object') {
-    //     new Observe(val);
-    // }
     let childOb = observe(val); // 收集数组依赖
     const dep = new Dep()
     Object.defineProperty(data, key, {
@@ -143,29 +205,28 @@ const vm = new Vue({
         age: 222,
         arr: [333, 444],
         obj: {
-            name: 'obj'
+            name: 'person',
         }
     }
 })
 
-Vue.prototype.$watch = function(expOrFn, cb) {
-    new Watcher(vm, expOrFn, cb);
+Vue.prototype.$watch = function(expOrFn, cb, options = {}) {
+    const watcher = new Watcher(vm, expOrFn, cb, options);
+    if(options.immediate) {
+        cb.call(vm, watcher.value)
+    }
+    return function unwatchFn() {
+        watcher.teardown()
+    }
 }
 
-vm.$watch('data.obj.name', function(oldVal, newVal) {
+vm.$watch('data.obj', function(oldVal, newVal) {
     console.log('oldVal', oldVal)
     console.log('newVal', newVal)
-})
+}, {deep: true, immediate: true})
 
-vm.data.obj.name = 222
+vm.data.obj.name = 1
 
-// vm.$watch('data.name', function(oldVal, newVal) {
-//     console.log('oldVal', oldVal)
-//     console.log('newVal', newVal)
-// })
-
-// vm.data.name = 10;
-// vm.data.arr.push(1)
 
 
 
