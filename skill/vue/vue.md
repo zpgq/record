@@ -2,6 +2,21 @@
 
 ## vue渲染过程
 模板引擎 ==> AST语法树(**parse解析器**) ==> 静态标记(**优化器**) ==> 输出rander函数(**代码生成器**) ==> VNode ==> 真实DOM
+1. ast语法树 ==> js对象描述语言本身, 即描述代码
+```
+const a = 1;  ==>
+{
+  indentifier: const,
+  name: a,
+  value: 1
+}
+```
+2. 虚拟dom ==> js对象描述节点
+div里面有data数据 ==>
+{
+  tag: div,
+  div: {data: [1, 2, 3]}
+}
 
 ## VNode概念
 1. 简单来说虚拟dom其实就是一个节点描述对象, 描述如何去创建真实的dom节点
