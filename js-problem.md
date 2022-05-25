@@ -130,6 +130,33 @@
 1. 区分数组和对象
 - isArray( [] )、Object.prototype.toString.call( [] )、[] instansof Array
 
+## Promise问题
+1. promise的两种用法
+```
+const p1 = Promise.resolve('成功状态传递的数据')
+p1.then(res => console.log(res))
+```
+```
+const p1 =  new Promise((resolve, reject) => { resolve('成功状态传递的数据') })
+p1.then(res => console.log(res))
+```
+2. promise传递函数
+```
+function myExecutorFunc() {
+   return '成功状态传递的数据'
+}
+const p1 = Promise.resolve(myExecutorFunc)
+p1.then(res => console.log(res()))
+```
+```
+function myExecutorFunc(resolve, reject) {
+   resolve('成功传递的数据')
+}
+const p1 = new Promise(myExecutorFunc)
+p1.then(res => console.log(res))
+```
+- 
+
 ## DOM部分
 1. 常用创建节点类型
    ```
