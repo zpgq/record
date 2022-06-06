@@ -71,6 +71,13 @@
       class Person{} Person.prototype.age = "111"
       ```
      - 构造函数原型身上可以看到此属性
+   注意: 
+      ```
+      class Person { sayHi = () => { } } // 此函数是在实例上加方法
+      ```
+      ```
+      class Person { sayHi() { } } // 此函数在构造函数原型上添加此方法, 且属性为不可遍历属性(不高亮)
+      ```
 4. new构造函数详解**原型链的基本应用**
    ````
    let o = new Foo("sss")
