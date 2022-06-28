@@ -1,11 +1,7 @@
-class Person {
-    sayHi() {
-        console.log('aa')
-    }
-    test = () => {
-        console.log('a')
-    }
-}
 
-const p = new Person()
-console.log('p', p)
+var i;
+for (i = 0; i < 9; i ++) {
+    setTimeout(() => {
+     console.log(i)   
+    });
+}
