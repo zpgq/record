@@ -101,7 +101,7 @@
    function Son() {}
    let son = new Son()
    ```
-   缺点: 父函数的实例属性也会继承
+   缺点: 1.父函数的实例属性也会继承 2.无法传递参数
 2. 借用构造函数
    ```
    function Father() {}
@@ -111,15 +111,20 @@
    let son = new Son()
    ```
    缺点: 无法继承父函数原型上的属性方法, 多执行了一个函数
-3. 共享原型
+3. 组合式继承
    ```
    function Father() {}
-   function Son() {}
-   Son.prototype = Father.prototype
+   function Son() {
+      Father.call(this);
+   }
+   Son.prototype = new Father() 
    ```
-   缺点: 修改子函数原型会影响父函数的原型
 4. 圣杯模式(借用一个构造函数充当中间件)
    ```
+   function Father() {}
+   function Son() {
+      Father.call(this);
+   }
    function inherit(Son, Father) {
       function F() {}
       F.prototype = Father.prototype;
@@ -127,6 +132,31 @@
       Son.prototype.constructor = Son;
       Son.prototype.uber = Father.prototype
    }
+   ```
+
+## js的多态
+   ```
+   function Base() {}
+   Base.prototype.initial = function () {
+      this.init()
+   }
+   function Son() {
+      this.init = function () {
+         console.log('son init')
+      }
+   }
+   function Father() {
+      this.init = function () {
+         console.log('father init')
+      }
+   }
+   Son.prototype = new Base()
+   Father.prototype = new Base()
+
+   let son = new Son()
+   let father = new Father()
+   son.init()  ==> // son init
+   father.init() ==> // father init
    ```
 
 ## 运算符问题问题
