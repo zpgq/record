@@ -60,3 +60,10 @@ handle() {
 
 ## 全局api注意事项
 1. vm.$off移出事件的时候, 对比移出是从后面往前对比移出的, 防止轮询的时候跳过一个元素
+
+## $on和$emit
+```
+A组件 -> $emit('send', 'aaa')
+B组件 -> $on('send', res => {console.log(res) // aaa })
+$emit => 事件, $on绑定事件
+```
