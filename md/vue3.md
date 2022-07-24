@@ -1,3 +1,25 @@
+## Vue3 优化
+静态提升
+函数缓存 ==> 自动react的useMeno, useCallBacl
+···
+_catch[1] || (_catch[1] = $events => (_ctx.foo($events)))
+···
+
+## vue3用法
+函数式组件  => 插槽 const slot = this.$slot.default || []   h(‘div’, slot.map(child => return h(‘div’, child)))
+
+## vue3混入代替方案
+1. mixin
+2. 高阶组件 ==> props接收
+3. 作用域插槽
+4. setup赋值 ==> 提取成一个函数 解构赋值
+	注意：提取公共的setup时, 可以使用一个函数传入setup, setup使用watchEffect以达到每次改变id都能执行获取数据的效果(使用其需每次初始化数据)
+
+
+
+
+
+## 官网用法笔记
 1. 组个api setup
 - 执行时间  setup 选项在组件被创建之前执行，一旦 props 被解析完成，它就将被作为组合式 API 的入口
 - setup 返回的所有内容都暴露给组件的其余部分 (计算属性、方法、生命周期钩子等等) 以及组件的模板

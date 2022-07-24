@@ -1,4 +1,5 @@
 ## webpack优化
+- 概念 一般从优化打包速度、优化产出代码两方面去优化
 1. 多入口
 多个htmlWebpackPlugin
 2. 抽离css
@@ -33,10 +34,53 @@ htmlWebpackPlugin({
 4. 懒加载
 dymic
 5. 出口output filename使用hashcontent
+6. HappyPack开启多进程打包
+```
+new HappyPack({
+    id: 'bable',
+    loaders: ['bable-loader?cacheDirectory]
+})
+```
+注意：小项目开启多线程会减低速度(进程开销)
+7. ParalleUglifyPlugin压缩js
+8. 使用dll优化
+```
+// 打包dll DllPlugin=>
+// webpack.dll.js =>
+entry: {
+    react: ['react', 'react-dom']
+},
+output: {
+    filename: '[name].dll.js',
+    path: distParh,
+    library: '_dll_[name]'
+},
+plugins: [
+    new DllPlugin({
+        name: '_dll_[name]',
+        path: path.join(distPath, '[name].manifest.json') // 输出的映射文件
+    })
+]
+
+// 脚本 =>
+“scrirpts”： {
+    "dll": "webpack --config build/webpack.dll.js" // dll的配置文件地址
+}
+
+// 使用打包好的dll DllReferencePlugin=>
+// index.html文件 =>
+<script src="./react.dll.js"></script>
+
+// webpack.dll.js =>
+plugins: [
+    new DllReferencePlugin({
+       manifest: require(path.join(distPath, 'react.mainfest.json')) // 引用映射文件
+    })
+]
+```
 
 
-6. 优化打包速度
-7. 优化产出代码
+
 
 
 ## 概念
