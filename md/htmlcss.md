@@ -1,9 +1,18 @@
-## 移动端像素
-1. 分辨率就是物理像素**最小颗粒**, 即设备像素(由操作系统决定, 可变化)
-2. css中的px就是逻辑像素, 即设备独立像素**谷歌调试器中的大小**(每个设备固定)
-3. dpr**像素比** = 物理像素/逻辑像素
-4. 屏幕密度 = (横^2分辨率 + 纵^2分辨率)开根/手机尺寸(手机对角线)
-
+## 移动端适配
+- dpr**像素比** => 物理像素/逻辑像素(可使用window.devicePixelRatio获取)
+   - 物理像素**最小颗粒**, 即分辨率, 即设备像素(由操作系统决定, 可变化)
+   - 逻辑像素**css中的px**, 即谷歌浏览器模拟移动端显示的尺寸数值, 即设备独立像素
+- 理想视口(布局视口大小 === 视觉视口, 即meta标签name="viewport" width=device-width)
+- 兼容不同类型设备
+   - rem适配 ==> 利用rem都是基于html标签的font-size进行计算的
+      - 可以将**当前适配设备**的html标签的font-size设为**当前适配设备宽度**或者**100px**
+     ```
+     var designWidth = 375;  		// 设计稿宽度
+     var scale = window.innerWidth / designWidth; //计算当前屏幕的宽度与设计稿比例
+     document.documentElement.style.fontSize = scale*100 + 'px';
+     ```
+   - vw适配 ==> 都是相对于视口宽度来计算的( 1vw === 当前适配设备宽度 * 0.01 )
+      - 可以利用postcss-px-to-viewport插件进行计算
 ## BFC
 - 触发条件
    1. overflow不为visible
@@ -17,7 +26,18 @@
 
 ## IFC
 - 触发条件
-    一个块级元素中仅包含内联级别元素
+   一个块级元素中仅包含内联级别元素
 - 规则
-    1. 垂直方向的margin不生效
-    2. text-align、vertical-align属性生效
+   1. 垂直方向的margin不生效
+   2. text-align、vertical-align属性生效
+
+## 规范
+- 标签嵌套问题
+   - p标签里面套div
+   - div直接嵌套li
+- css书写顺序
+   1. 定位
+   2. 自身属性
+   3. 文字
+   4. 背景
+   5. 其他
