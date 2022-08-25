@@ -198,5 +198,7 @@ function myExecutorFunc(resolve, reject) {
 const p1 = new Promise(myExecutorFunc)
 p1.then(res => console.log(res))
 ```
-- 
+
+## 迭代器生成器
+- 生成器是一种特殊的迭代器
 
