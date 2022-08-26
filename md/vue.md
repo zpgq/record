@@ -47,7 +47,7 @@ div里面有data数据 ==>
 
 ## vue概念知识笔记
 1. 为什么vue使用异步更新列队
-  状态改变只通知到组件, 组件中有两个状态改变会在改组件有两个watcher, 从而进行两次渲染, 但其实只需要一次渲染VNode会对整个组件进行diff对比渲染, 故等待左右状态完毕一次性把整个组件渲染即可(**更新DOM在微任务执行, 实际上DOM的回调也是使用的vm.$nextTick注册到微任务中的**)
+  vue采用一组件一个watcher, 若一个组件同一轮循中有两个状态改变, 那么watcher会收到两次通知, 从而进行两次渲染, 故vue实现一个列队将所有watcher实例缓存起来, 在下一次事件循环中触发渲染流程并清空队列(**更新DOM在微任务执行, 实际上DOM的回调也是使用的vm.$nextTick注册到微任务中的**)
 2. 更新dom和默认nextTick都是在微任务执行 ==> **许先修改数据在执行nextTick**
 ```
 handle() {
@@ -67,3 +67,29 @@ A组件 -> $emit('send', 'aaa')
 B组件 -> $on('send', res => {console.log(res) // aaa })
 $emit => 事件, $on绑定事件
 ```
+
+## 源码
+- 为什么在Observer上另外声明一个dep且定义ob属性**每个key对应的watcher收集到的dep在一个闭包里面无法访问**
+  ```
+      ==>Observer
+        this.dep = new Dep();
+        def(value, "__ob__", this);
+      ==>defineProperty get
+         if (childOb) {
+            childOb.dep.depend();
+            if (Array.isArray(value)) {
+              dependArray(value);
+            }
+          }
+  ```
+  1. 给Vue.set()方法
+  2. 数组劫持用的
+
+## 优化
+1. 写了scope需要避免使用元素选择器
+2. 使用组件空内容不能使用单标签闭合(闭合了vue内部会自动生成闭合标签造成性能浪费**模版语法无法识别单标签闭合**)
+
+## 问题
+1. path: '/detail/:id' 从/detail/1切换到/detail/2组件不会触发变化
+  - 路由守卫检测变化beforeRoutePpdata
+  - 通过watch监听$route
