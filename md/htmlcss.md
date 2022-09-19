@@ -31,6 +31,12 @@
    1. 垂直方向的margin不生效
    2. text-align、vertical-align属性生效
 
+## flex
+- flex复合属性(默认值0 1 auto)
+   1. flex-grow**剩余扩展比**
+   2. flex-shrink**超过收缩比**
+   3. flex-basis**初始长度**
+
 ## 规范
 - 标签嵌套问题
    - p标签里面套div
