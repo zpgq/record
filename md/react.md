@@ -25,6 +25,21 @@
 理解: 使用了useMemo和useCallback作用在子组件时, 需要配合memo才能减少子组件重新渲染
 
 ## state说明
+- 相同
+    1. 同作用域多次修改state会合并修改, 若不想合并参数可使用回调函数的方式
+       ```
+        // ==> + 1
+        this.setState({count: this.state.count + 1})
+        this.setState({count: this.state.count + 1})
+
+        // ==> +2
+        setCount((prev) => {
+            return prev + 1
+        });
+        setCount((prev) => {
+            return prev + 1
+        });
+       ```
 - 区别
     1. class的state会浅合并(assign), useState不会
        ```
@@ -65,3 +80,4 @@
      3. 当前count为{name: 1}, 改成{name: 1}
         ....
      ```
+- 异步同步
