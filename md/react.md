@@ -1,11 +1,12 @@
-## ref变化useRef并不会被通知, 可以借用useCallback ref、useState使其变成响应式
+## ref 
+- ref变化useRef并不会被通知, 可以借用useCallback ref、useState使其变成响应式
     ```
     function MeasureExample() {
     const [height, setHeight] = useState(0);
 
     const measuredRef = useCallback(node => {
         if (node !== null) {
-        setHeight(node.getBoundingClientRect().height);
+            setHeight(node.getBoundingClientRect().height);
         }
     }, []);
 
@@ -69,7 +70,6 @@
         }))
         
        ```
-    
 - 注意项
   1. 改变成一个固定的对象会无限触发(**通过浅比较(Object.is)对比是否需要重新渲染**)
      ```
@@ -81,3 +81,36 @@
         ....
      ```
 - 异步同步
+
+## 实例
+- 通过ref取值实例
+    ```
+    const handleChange = (event) => {
+        const value = event.target.value
+        const name = event.target.name;
+        this.setState({
+            [name]: value
+        })
+    }
+    <input
+        name='test'
+        onChange={handleChange}
+    >
+    ```
+
+## 受控和非受控组件
+- 受控组件
+在受控组件上指定 value 的 prop 会阻止用户更改输入。如果你指定了 value，但输入仍可编辑，则可能是你意外地将value 设置为 undefined 或 null。**value**
+    ```
+    this.state = {
+        text: '1'
+    }
+    <input type="text" name="text" value={this.state.text} />
+    ```
+- 非受控组件
+表单中的value会覆盖dom节点的值, 非受控组件推荐使用defaultValue, 不会造成 DOM 上值的任何更新。**defaultValue**
+    ```
+    this.input = React.createRef();
+    <input type="text" ref={this.input} />
+    console.log(this.input.current.value)
+    ```
