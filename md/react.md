@@ -70,17 +70,28 @@
         }))
         
        ```
-- 注意项
-  1. 改变成一个固定的对象会无限触发(**通过浅比较(Object.is)对比是否需要重新渲染**)
-     ```
-     const [count, setCount] = useState(0);
-     () => setCount({name: 1})
-     1. 当前count为0, 改成{name: 1};
-     2. 当前count为{name: 1}, 改成{name: 1}
-     3. 当前count为{name: 1}, 改成{name: 1}
-        ....
-     ```
 - 异步同步
+- 注意项
+    1. 改变成一个固定的对象会无限触发(**通过浅比较(Object.is)对比是否需要重新渲染**)
+        ```
+        const [count, setCount] = useState(0);
+        () => setCount({name: 1})
+        1. 当前count为0, 改成{name: 1};
+        2. 当前count为{name: 1}, 改成{name: 1}
+        3. 当前count为{name: 1}, 改成{name: 1}
+            ....
+        ```
+    2. 原生事件直接打印状态为初始值不变化, 但在render内变化(**状态回调会返回上一次的值==>变化**)
+        ```
+        const [count, setCount] = useState(0)
+        document.addEventListener('click', () => {
+            // 多次点击无变化 ==> 
+            setCount(1);
+            console.log(count);
+            // 点击变成1 ==> 
+            setCount(prevState => 1) 
+        })
+        ```
 
 ## 实例
 - 通过ref取值实例
@@ -114,3 +125,24 @@
     <input type="text" ref={this.input} />
     console.log(this.input.current.value)
     ```
+
+## 规范/小技巧
+- hooks
+    - 组件封装
+        1. 小驼峰封装组件**组件是封装到当前组件内**
+            ```
+            const renderList = () => <div></div>
+            ```
+        2. 大头峰封装组件**组件是封装到当前组件外**
+            ```
+            <List />
+            ```
+    - 使用useCallback的时候可以适当利用useState回调写法, 以防止改变依赖数据导致未更新数据
+        ```
+        const toggleModal = useCallback(() => {
+            setState(prevState => ({
+                ...prevState,
+                modalOpen: !prevState.modalOpen
+            }))
+        }, [])
+        ```
