@@ -225,18 +225,18 @@ p1.then(res => console.log(res))
   ```
 
 ## js精度问题
-1. 字符串超过16位转成数字会失去精度(往后的都是0)
+1. 字符串超过16位转成数字会失去精度(往后的都是0)**通过JSON.parse或者Number等等**
 2. 0.1 + 0.2 != 0.3
 
 ## 类型转化
 - 类数组转化成数组Array.from()**转化后才可以使用数组方法**
-```
-// 类数组 ==>
-const obj = {
-   0: {name: 0},
-   1: {name: 1},
-   length: 2
-}
-// 数组 ==>
-const arr = Array.from(obj)
-```
+   ```
+   // 类数组 ==>
+   const obj = {
+      0: {name: 0},
+      1: {name: 1},
+      length: 2
+   }
+   // 数组 ==>
+   const arr = Array.from(obj)
+   ```
