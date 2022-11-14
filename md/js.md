@@ -240,3 +240,6 @@ p1.then(res => console.log(res))
    // 数组 ==>
    const arr = Array.from(obj)
    ```
+
+## 类似方法说明
+- 处理字符推荐使用substring, slice具有有类似效果

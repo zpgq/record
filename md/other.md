@@ -10,11 +10,48 @@
     - vue采用的是数据响应式
 
 ## 浏览器兼容问题
-1. 不同浏览器padding和margin有差异
-   ```
-   * {
-      margin: 0;
-      padding: 0
-   }
-   ```
-2. 
+- css
+   1. 不同浏览器默认margin、padding不同
+      解决: reset.css样式重置
+   2. css3新属性
+      解决: 加前缀
+   3. 块属性float后, 设有横向margin, IE6后面一块被顶到下一行
+      解决: 
+   4. 设置较小高度标签（一般小于10px），在IE6，IE7，页面中高度超出自己设置的高度
+      解决: 设置的设置line-heihgt小于高度或者overflow: hidden等等
+   5. inline-block导致文字对齐有间隙
+      解决: 利用vertical-align: middle;
+   6. 最小高度不生效问题
+      解决: 使用width方式min-width不生效
+      ```
+         #box{
+            width: 80px;
+            height: 35px;
+         }
+         html>body #box{
+            width: auto;
+            height: auto; 
+            min-width: 80px; 
+            min-height: 35px;
+         }
+      ```
+   7. 超链接访问样式出现问题
+      解决: 按顺序设置样式
+      ```
+         a:link{}
+         a:visited{}
+         a:hover{}
+         a:active{}
+      ```
+- js
+   1. 阻止事件冒泡传播
+      ```
+      	document.onClick=function(e){
+            var e = e||window.event; // 兼容IE9的event写法
+            if(e.stopPropagation){
+               e.stopPropagation();//W3C标准
+            }else{
+               e.cancelBubble=true;//IE
+            }
+         }
+      ```
