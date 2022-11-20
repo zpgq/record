@@ -1,4 +1,4 @@
-## DOM部分
+## 1.1 节点
 1. 常用创建节点类型
    ```
    const text = document.createTextNode('文本节点')
@@ -6,7 +6,7 @@
    const ele = document.createElement('div') // 元素节点
    ```
 
-## 属性
+## 1.2 属性
  - 样式style
       1. 获取行间样式
          - el.style

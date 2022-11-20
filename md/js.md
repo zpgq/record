@@ -65,7 +65,7 @@
 
       class Person { sayHi() { } } // 此函数在构造函数原型上添加此方法, 且属性为不可遍历属性(不高亮)
       ```
-   ```
+
 ### 1.3.2 原型链(**prototype 也是一个对象，顾也会有__proto__属性**)
 - 实例对象.__proto__ ==> 构造函数的prototype(通过里面的__proto__连接) ==> Object.prototype ==> null
 - 原型链的基本应用**new详解**

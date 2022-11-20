@@ -1,4 +1,4 @@
-## hash路由和h5 history
+## 1.1 hash路由和h5 history
 1. 区别
  - hash路由onhashchange监听hash路由的变化
  - h5 history是通过onpopstate监听前进后退

@@ -1,4 +1,4 @@
-## webpack优化
+## 1.1 webpack优化
 - 概念 一般从优化打包速度、优化产出代码两方面去优化
 1. 多入口
 多个htmlWebpackPlugin
@@ -79,11 +79,7 @@ plugins: [
 ]
 ```
 
-
-
-
-
-## 概念
+## 1.2 概念
 1. modeule 模块 一切皆模块 如js、css、图片等等每个文件都是一个模块
 2. chunk 多模块合并 如entry import() splitChunks
 3. bundle 最终输出文件
