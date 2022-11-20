@@ -243,3 +243,32 @@ p1.then(res => console.log(res))
 
 ## 类似方法说明
 - 处理字符推荐使用substring, slice具有有类似效果
+
+## 兼容
+- 复制功能
+   浏览器禁用了非安全域的 navigator.clipboard 对象, 无clipboard.writeText方法
+   解决: 非安全域退回到 document.execCommand('copy'); 保证功能一直可用
+   ```
+   // 先给要复制的文本或者按钮加上点击事件后，并将要复制的值传过来
+    async copyValue(val) {
+      if (navigator.clipboard && window.isSecureContext) {
+        // navigator clipboard 向剪贴板写文本
+        this.$message.success('复制成功')
+        return navigator.clipboard.writeText(val)
+      } else {
+        // 创建text area
+        const textArea = document.createElement('textarea')
+        textArea.value = val
+        // 使text area不在viewport，同时设置不可见
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        this.$message.success('复制成功')
+        return new Promise((res, rej) => {
+          // 执行复制命令并移除文本框
+          document.execCommand('copy') ? res() : rej()
+          textArea.remove()
+        })
+      }
+    },
+   ```
