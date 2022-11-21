@@ -159,19 +159,28 @@
   ==> 1, 2, 3, 4， 5
   ```
 
-## 1.7 总结
-### 1.7.1 运算符问题问题
+## 1.7 概念
+- 迭代器生成器
+   1. 生成器是一种特殊的迭代器
+- 进程(cpu资源分配的最小单位==>工厂)与线程(cpu调度的最小单位==>工人)
+   1. 对个线程能够共享一个进程
+   2. 渲染进程内GUI渲染线程和JS引擎线程是互斥的**js能够操作dom, 如果修改元素并同时渲染界面, 那么渲染后的元素就不一致了**
+
+
+
+## 总结
+- 运算符问题问题
    ```
    false && console.log("a") // 控制台未打印
    false || console.log("a") // 控制台打印出a
    ```
-### 1.7.2 区分数据类型方法
+- 区分数据类型方法
    1. 区分数组和对象
       - isArray( [] )、Object.prototype.toString.call( [] )、[] instansof Array
-### 1.7.3 js精度问题
+- js精度问题
    1. 字符串超过16位转成数字会失去精度(往后的都是0)**通过JSON.parse或者Number等等**
    2. 0.1 + 0.2 != 0.3
-### 1.7.4 类型转化
+- 类型转化
    1. 类数组转化成数组Array.from()**转化后才可以使用数组方法**
       ```
       // 类数组 ==>
@@ -183,41 +192,22 @@
       // 数组 ==>
       const arr = Array.from(obj)
       ```
-### 1.7.5 类似方法说明
+- 类似方法说明
    1. 处理字符推荐使用substring, slice具有有类似效果
-
-## 1.8 兼容
-- 复制功能
-   浏览器禁用了非安全域的 navigator.clipboard 对象, 无clipboard.writeText方法
-   解决: 非安全域退回到 document.execCommand('copy'); 保证功能一直可用
+- 引用值引用复制地址指向相同会影响原来的值(包括通过传参使用)
    ```
-   // 先给要复制的文本或者按钮加上点击事件后，并将要复制的值传过来
-    async copyValue(val) {
-      if (navigator.clipboard && window.isSecureContext) {
-        // navigator clipboard 向剪贴板写文本
-        this.$message.success('复制成功')
-        return navigator.clipboard.writeText(val)
-      } else {
-        // 创建text area
-        const textArea = document.createElement('textarea')
-        textArea.value = val
-        // 使text area不在viewport，同时设置不可见
-        document.body.appendChild(textArea)
-        textArea.focus()
-        textArea.select()
-        this.$message.success('复制成功')
-        return new Promise((res, rej) => {
-          // 执行复制命令并移除文本框
-          document.execCommand('copy') ? res() : rej()
-          textArea.remove()
-        })
-      }
-    },
-   ```
+   let obj = {
+      name: '111',
+      age: '111'
+   }
 
-## 1.9 概念
-- 迭代器生成器
-   1. 生成器是一种特殊的迭代器
-- 进程(cpu资源分配的最小单位==>工厂)与线程(cpu调度的最小单位==>工人)
-   1. 对个线程能够共享一个进程
-   2. 渲染进程内GUI渲染线程和JS引擎线程是互斥的**js能够操作dom, 如果修改元素并同时渲染界面, 那么渲染后的元素就不一致了**
+   let obj1 = obj
+
+   const getObj = (newObj) => {
+      newObj.newAge = '333'
+      return newObj
+   }
+   console.log('getObj', getObj(obj1))
+
+   console.log('after', obj) // 有newAge333
+   ```
