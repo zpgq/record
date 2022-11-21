@@ -59,13 +59,13 @@
       class Person{} Person.prototype.age = "111"
       ```
      - 构造函数原型身上可以看到此属性
-   4. 注意: 
-      ```
-      class Person { sayHi = () => { } } // 此函数是在实例上加方法
-
-      class Person { sayHi() { } } // 此函数在构造函数原型上添加此方法, 且属性为不可遍历属性(不高亮)
-      ```
-
+   4. **注意:** 
+      - class
+         ```
+         class Person { sayHi = () => { } } // 此函数是在实例上加方法
+         class Person { sayHi() { } } // 此函数在构造函数原型上添加此方法, 且属性为不可遍历属性(不高亮)
+         ```
+      - 一般属性放在实例上(会创建多个), 方法放在原型上(只会创建一个, 共用方法)**详情可看构造器模式**
 ### 1.3.2 原型链(**prototype 也是一个对象，顾也会有__proto__属性**)
 - 实例对象.__proto__ ==> 构造函数的prototype(通过里面的__proto__连接) ==> Object.prototype ==> null
 - 原型链的基本应用**new详解**
