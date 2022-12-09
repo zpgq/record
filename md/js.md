@@ -245,3 +245,17 @@
             });
             console.log(result1) // [{age: 1}, {age: 1}, {age: 1}]
          ```
+- 循环数组时, item判断下是否为空为空时不操作, 防止假值不是false操作对象报错(false.name === undefined, 其他的假值.name报错)
+   ```
+   const resultColunms =  [
+      {
+         name: 11
+      },
+      null,
+      {
+         name: 222
+      }
+   ]
+   resultColunms.map(item => item && item.name) // 正常
+   resultColunms.map(item => item.name) // 报错
+   ```

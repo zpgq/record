@@ -92,6 +92,37 @@
             setCount(prevState => 1) 
         })
         ```
+    3. 在setState内会被缓存(即使是默认值也会被缓存), 无修改不会重新渲染(diff对比无变化)
+        ```
+        const [count, setCount] = useState<any>(0);
+        const tabLists: any = [
+            {
+                key: 1,
+                comp: <Test count={count} />
+            },
+            {
+                key: 2,
+                comp: <Test1 count={count} />
+            }
+        ]
+
+        const [tabs, setTabs] = useState(tabLists[0]) // 缓存了tabLists[0], Test组件只渲染一次且props为{count: 0}
+        const tabs = tabLists[0] // 未缓存, Test组件渲染两次props第二次打印为{count: 2}
+
+        useEffect(() => {
+            setCount(2)
+        }, [])
+        return (
+            {
+                tabs.comp
+            }
+        )
+
+        // Test ==>
+        const Test = (props) => {
+            console.log(props);
+        }
+        ```
 
 ## 实例
 - 通过ref取值实例
