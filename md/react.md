@@ -29,17 +29,21 @@
 - 相同
     1. 同作用域多次修改state会合并修改, 若不想合并参数可使用回调函数的方式
        ```
-        // ==> + 1
-        this.setState({count: this.state.count + 1})
-        this.setState({count: this.state.count + 1})
+        const [count, setCount] = useState(0)
+        this.state = {count: 0}
+        // ==> 多次修改state会合并修改 
+        setCount(count + 1) // 1
+        setCount(count + 1) // 1
 
-        // ==> +2
-        setCount((prev) => {
-            return prev + 1
-        });
-        setCount((prev) => {
-            return prev + 1
-        });
+        this.setState({count: this.state.count + 1}) // 1
+        this.setState({count: this.state.count + 1}) // 1
+
+        // ==> 不想合并参数可使用回调函数的方式
+        setCount((prev) => prev + 1); // 2
+        setCount((prev) => prev + 1); // 3
+
+        setState((prev) => ({count: prev + 1})) // 2
+        setState((prev) => ({count: prev + 1})) // 3
        ```
 - 区别
     1. class的state会浅合并(assign), useState不会
@@ -81,7 +85,32 @@
         3. 当前count为{name: 1}, 改成{name: 1}
             ....
         ```
-    2. 原生事件直接打印状态为初始值不变化, 但在render内变化(**状态回调会返回上一次的值==>变化**)
+    2. 当state为一个引用值需要修改值时, 直接修改可能导致无法更新, 赋值给一个新变量在修改即可正常(**未赋值给一个新变量Object.is为true**)
+        ```
+        const [obj, setObj] = useState({name: 'before'})
+
+        // ==> 直接赋值, 无更新
+        const handleClick = () => {
+            obj.name = 'after'
+            setObj(obj)
+        }
+        return (
+            obj.name // 'before'
+        )
+
+        // ==> 赋值给一个新变量, 在修改, 更新
+         const handleClick = () => {
+            const newObj = { ...obj }
+            newObj.name = 'after'
+            setObj(obj)
+        }
+        return (
+            obj.name // 'after'
+        )
+
+
+        ```
+    3. 原生事件直接打印状态为初始值不变化, 但在render内变化(**状态回调会返回上一次的值==>变化**)
         ```
         const [count, setCount] = useState(0)
         document.addEventListener('click', () => {
@@ -92,7 +121,7 @@
             setCount(prevState => 1) 
         })
         ```
-    3. 在setState内会被缓存(即使是默认值也会被缓存), 无修改不会重新渲染(diff对比无变化)
+    4. 在setState内会被缓存(即使是默认值也会被缓存), 无修改不会重新渲染(diff对比无变化)
         ```
         const [count, setCount] = useState<any>(0);
         const tabLists: any = [
