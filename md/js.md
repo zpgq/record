@@ -195,7 +195,7 @@
 - 类似方法说明
    1. 处理字符推荐使用substring, slice具有有类似效果
 - 原始值(复制堆内值, 不会影响原来的值)和引用值(复制栈的地址, 指向相同影响原来的值) 
-   1. 引用值引用复制地址指向相同会影响原来的值(包括通过传参使用)
+   1. 引用值引用复制地址指向相同会影响原来的值(包括通过传参使用), 若赋值成一个原始值则不会影响到原来的值
       ```
       let obj = {
          name: '111',
@@ -204,13 +204,23 @@
 
       let obj1 = obj
 
+      // ==> 通过传参也会影响原来的值
       const getObj = (newObj) => {
          newObj.newAge = '333'
          return newObj
       }
       console.log('getObj', getObj(obj1))
-
       console.log('after', obj) // 有newAge333
+
+      // ==> 赋值成一个原始值则不会影响到原来的值 
+       const getObj = (newObj) => {
+         newObj = 333
+         return newObj
+      }
+      console.log('getObj', getObj(obj1)) // 333
+      console.log('after', obj) // {name: '111', age: '111'}
+
+
       ```
    2. for, map, foreach循环操作原始值不会影响原来的值, 操作引用值影响原来的值
       - 操作原始值

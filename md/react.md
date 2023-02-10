@@ -177,3 +177,29 @@
             }))
         }, [])
         ```
+    - useState中利用setCount回调, 修改原有的值不会受useMemo, useCallback的影响, 而直接在外面修改count会使用缓存中的值0, 导致一直是1
+        ```
+        const [count, setCount] = useState(0)
+
+        // ==> 使用回调
+        const handleClick = useCallback(() => {
+            console.log('count', count) // 0
+            setCount((prevCount: any) => {
+                console.log('prevCount', prevCount) // 累加1, 2, 3
+                return prevCount + 1
+            })
+        }, [])
+
+        // ==> 直接在外面修改state
+        const handleClick = useCallback(() => {
+            console.log('count', count) // 一直是0
+            const newCount = count + 1 // 一直是1
+            setCount(newCount) 
+        }, [])
+
+        const renderButon = useMemo(() => {
+            return (
+                <div onClick={handleClick}>点击获取count</div>
+            )
+        }, []) `
+        ```
