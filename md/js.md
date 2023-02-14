@@ -192,6 +192,11 @@
       // 数组 ==>
       const arr = Array.from(obj)
       ```
+   2. 使用Number转化, 需先使用取反!!转化成boolea类型, 防止出现NaN(**Number(undefined === NaN)**)
+      ```
+      const validFlag = undefined;
+      Number(!!validFlag)
+      ```
 - 类似方法说明
    1. 处理字符推荐使用substring, slice具有有类似效果
 - 原始值(复制堆内值, 不会影响原来的值)和引用值(复制栈的地址, 指向相同影响原来的值) 
