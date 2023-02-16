@@ -121,7 +121,7 @@
             setCount(prevState => 1) 
         })
         ```
-    4. 在setState内会被缓存(即使是默认值也会被缓存), 无修改不会重新渲染(diff对比无变化)
+    4. 在setState内会被缓存(即使是默认值也会被缓存), 无修改不会重新渲染(diff对比无变化)**context的Provider直接赋值总是新的值会重新渲染, 可以利用state初始值会被缓存的特性优化context防止过多渲染**
         ```
         const [count, setCount] = useState<any>(0);
         const tabLists: any = [
@@ -135,8 +135,10 @@
             }
         ]
 
-        const [tabs, setTabs] = useState(tabLists[0]) // 缓存了tabLists[0], Test组件只渲染一次且props为{count: 0}
-        const tabs = tabLists[0] // 未缓存, Test组件渲染两次props第二次打印为{count: 2}
+        // ==> 缓存了tabLists[0], Test组件只渲染一次且props为{count: 0}
+        const [tabs, setTabs] = useState(tabLists[0])
+        // ==> 未缓存, Test组件渲染两次props第二次打印为{count: 2}
+        const tabs = tabLists[0]
 
         useEffect(() => {
             setCount(2)
@@ -186,6 +188,26 @@
     console.log(this.input.current.value)
     ```
 
+## 组件通讯
+- 父组件获取子组件的函数, 函数触发时机在父函数上(**useImperativeHandle**)
+    ```
+    // ==> 父组件声明ref并使用
+    const getSonRef = useRef();
+    const handleClick = () => {
+        ref.current.getData
+    }
+
+    // ==> 子组件接受ref声明函数执行子组件的函数
+    const getData = () => {
+        console.log('getData')
+    }
+    useImperativeHandle(getSonRef, () => ({
+        getData() {
+            getData()
+        }
+    }))
+    ```
+
 ## 规范/小技巧
 - hooks
     - 组件封装
@@ -206,7 +228,7 @@
             }))
         }, [])
         ```
-    - useState中利用setCount回调, 修改原有的值不会受useMemo, useCallback的影响, 而直接在外面修改count会使用缓存中的值0, 导致一直是1
+    - useState中利用setCount回调函数, 修改原有的值不会受useMemo, useCallback的影响, 而直接在外面修改count会使用缓存中的值0, 导致一直是1
         ```
         const [count, setCount] = useState(0)
 
