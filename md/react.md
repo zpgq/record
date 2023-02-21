@@ -1,31 +1,4 @@
-## ref 
-- ref变化useRef并不会被通知, 可以借用useCallback ref、useState使其变成响应式
-    ```
-    function MeasureExample() {
-    const [height, setHeight] = useState(0);
-
-    const measuredRef = useCallback(node => {
-        if (node !== null) {
-            setHeight(node.getBoundingClientRect().height);
-        }
-    }, []);
-
-    return (
-        <>
-        <h1 ref={measuredRef}>Hello, world</h1>
-        <h2>The above header is {Math.round(height)}px tall</h2>
-        </>
-    );
-    }
-    ```
-
-## useCallback、useMemo、memo
-1. useCallback 对于子组件渲染优化 (配合memo用于优化子组件的渲染次数)
-2. useMemo 对于当前组件高开销的计算优化
-3. memo自动检测当前组件的props, 若改变则重新渲染当前组件
-理解: 使用了useMemo和useCallback作用在子组件时, 需要配合memo才能减少子组件重新渲染
-
-## state说明
+## state
 - 相同
     1. 同作用域多次修改state会合并修改, 若不想合并参数可使用回调函数的方式
        ```
@@ -169,21 +142,60 @@
         }
         ```
 
-## 实例
-- 通过ref取值实例
+## ref 
+- ref变化useRef并不会被通知, 可以借用useCallback ref、useState使其变成响应式
     ```
-    const handleChange = (event) => {
-        const value = event.target.value
-        const name = event.target.name;
-        this.setState({
-            [name]: value
-        })
+    function MeasureExample() {
+    const [height, setHeight] = useState(0);
+
+    const measuredRef = useCallback(node => {
+        if (node !== null) {
+            setHeight(node.getBoundingClientRect().height);
+        }
+    }, []);
+
+    return (
+        <>
+        <h1 ref={measuredRef}>Hello, world</h1>
+        <h2>The above header is {Math.round(height)}px tall</h2>
+        </>
+    );
     }
-    <input
-        name='test'
-        onChange={handleChange}
-    >
     ```
+
+- 自定义属性传递ref和使用ref属性传递ref能达到一样的效果, 推荐尽量使用ref传递ref(**不会透传, 下一级组件接收上一级组件所有属性时, 不会接收多余自定义的ref属性**)
+
+## useCallback、useMemo、memo(**使用了useMemo和useCallback作用在子组件时, 需要配合memo才能减少子组件重新渲染**)
+- useCallback 对于子组件渲染优化 (配合memo用于优化子组件的渲染次数)
+- useMemo 对于当前组件高开销的计算优化
+- memo自动检测当前组件的props, 若改变则重新渲染当前组件
+- 使用后注意项
+    - useState中利用setCount回调函数, 修改原有的值不会受useMemo, useCallback的影响, 而直接在外面修改count会使用缓存中的值0, 导致一直是1
+        ```
+        const [count, setCount] = useState(0)
+
+        // ==> 使用回调
+        const handleClick = useCallback(() => {
+            console.log('count', count) // 0
+            setCount((prevCount: any) => {
+                console.log('prevCount', prevCount) // 累加1, 2, 3
+                return prevCount + 1
+            })
+        }, [])
+
+        // ==> 直接在外面修改state
+        const handleClick = useCallback(() => {
+            console.log('count', count) // 一直是0
+            const newCount = count + 1 // 一直是1
+            setCount(newCount) 
+        }, [])
+
+        const renderButon = useMemo(() => {
+            return (
+                <div onClick={handleClick}>点击获取count</div>
+            )
+        }, []) 
+        ```
 
 ## 受控和非受控组件
 - 受控组件
@@ -286,37 +298,7 @@
 
 
 ## 总结
-- react的依赖都是使用的Object.is进行浅比较(第一层), 故数据最好扁平化, 尽量不要超过2层
-
 - react改变数据最好不要修改原数据, 因为1. 在很多api内可以拿到上一次的数据且将其用于比较。 2. 直接修改原数据可能造成不更新(**useState**)
-
-- useState中利用setCount回调函数, 修改原有的值不会受useMemo, useCallback的影响, 而直接在外面修改count会使用缓存中的值0, 导致一直是1
-    ```
-    const [count, setCount] = useState(0)
-
-    // ==> 使用回调
-    const handleClick = useCallback(() => {
-        console.log('count', count) // 0
-        setCount((prevCount: any) => {
-            console.log('prevCount', prevCount) // 累加1, 2, 3
-            return prevCount + 1
-        })
-    }, [])
-
-    // ==> 直接在外面修改state
-    const handleClick = useCallback(() => {
-        console.log('count', count) // 一直是0
-        const newCount = count + 1 // 一直是1
-        setCount(newCount) 
-    }, [])
-
-    const renderButon = useMemo(() => {
-        return (
-            <div onClick={handleClick}>点击获取count</div>
-        )
-    }, []) 
-    ```
-
 - 高阶组件需要注意ref, key, 容器组件属性(高阶组件不建议直接修改传入组件, 一般通过组合方式实现功能如下)
         ```
         function logProps(WrappedComponent) {
