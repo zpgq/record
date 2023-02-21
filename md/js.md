@@ -164,16 +164,87 @@
   ==> 1, 2, 3, 4， 5
   ```
 
-## 1.7 概念
-- 迭代器生成器
-   1. 生成器是一种特殊的迭代器
-- 进程(cpu资源分配的最小单位==>工厂)与线程(cpu调度的最小单位==>工人)
-   1. 对个线程能够共享一个进程
-   2. 渲染进程内GUI渲染线程和JS引擎线程是互斥的**js能够操作dom, 如果修改元素并同时渲染界面, 那么渲染后的元素就不一致了**
+## 1.7 原始值(复制堆内值, 不会影响原来的值)引用值(复制栈的地址, 指向相同影响原来的值)
+- 引用值引用复制地址指向相同会影响原来的值(包括通过传参使用), 若赋值成一个原始值则不会影响到原来的值
+   ```
+   let obj = {
+      name: '111',
+      age: '111'
+   }
 
+   let obj1 = obj
 
+   // ==> 通过传参也会影响原来的值
+   const getObj = (newObj) => {
+      newObj.newAge = '333'
+      return newObj
+   }
+   console.log('getObj', getObj(obj1))
+   console.log('after', obj) // 有newAge333
+
+   // ==> 赋值成一个原始值则不会影响到原来的值 
+      const getObj = (newObj) => {
+      newObj = 333
+      return newObj
+   }
+   console.log('getObj', getObj(obj1)) // 333
+   console.log('after', obj) // {name: '111', age: '111'}
+   ```
+- for, map, foreach循环操作原始值不会影响原来的值, 操作引用值影响原来的值
+   1. 操作原始值
+      ```
+         const arr = [1, 2, 3];
+         console.log(arr); // 1, 2, 3
+         const result = arr.map(item => {
+            item = 3;  // 操作原始值
+            return item
+         });
+         console.log(result) // 3, 3, 3
+      ```
+   2. 操作引用值
+      ```
+         const arr1 = [{age: 1}, {age: 2}, {age: 3}]
+         console.log(arr1); // [{age: 1}, {age: 1}, {age: 1}]
+         const result1 = arr1.map(item => {
+            item.age = 1;  // 操作引用值
+            return { ...item }
+         });
+         console.log(result1) // [{age: 1}, {age: 1}, {age: 1}]
+      ```
+   3. 展开操作原始值, 覆盖值(**不会影响原来的值**)
+      ```
+         const arr1 = [{ age: 1 }, { age: 2 }, { age: 3 }]
+         console.log(arr1); // [{age: 1}, {age: 2}, {age: 3}]
+         const result1 = arr1.map(item => {
+            return {
+               ...item,
+               age: 1
+            }
+         });
+         console.log(result1) // [{age: 1}, {age: 1}, {age: 1}]
+      ```
+
+## 1.8 类型转换
+- 类数组转化成数组Array.from()**转化后才可以使用数组方法**
+   ```
+   // 类数组 ==>
+   const obj = {
+      0: {name: 0},
+      1: {name: 1},
+      length: 2
+   }
+   // 数组 ==>
+   const arr = Array.from(obj)
+   ```
+- 使用Number转化, 需先使用取反!!转化成boolea类型, 防止出现NaN(**Number(undefined) === NaN**)
+   ```
+   const validFlag = undefined;
+   Number(!!validFlag)
+   ```
 
 ## 总结
+- 循环数组时, item判断下是否为空为空时不操作, 防止假值不是false操作对象报错(false.name === undefined, 其他的假值.name报错)
+
 - 运算符问题问题
    ```
    false && console.log("a") // 控制台未打印
@@ -187,87 +258,9 @@
 - js精度问题
    1. 字符串超过16位转成数字会失去精度(往后的都是0)**通过JSON.parse或者Number等等**
    2. 0.1 + 0.2 != 0.3
-   
-- 类型转化
-   1. 类数组转化成数组Array.from()**转化后才可以使用数组方法**
-      ```
-      // 类数组 ==>
-      const obj = {
-         0: {name: 0},
-         1: {name: 1},
-         length: 2
-      }
-      // 数组 ==>
-      const arr = Array.from(obj)
-      ```
-   2. 使用Number转化, 需先使用取反!!转化成boolea类型, 防止出现NaN(**Number(undefined) === NaN**)
-      ```
-      const validFlag = undefined;
-      Number(!!validFlag)
-      ```
+  
 - 类似方法说明
    1. 处理字符推荐使用substring, slice具有有类似效果
-
-- 原始值(复制堆内值, 不会影响原来的值)和引用值(复制栈的地址, 指向相同影响原来的值) 
-   1. 引用值引用复制地址指向相同会影响原来的值(包括通过传参使用), 若赋值成一个原始值则不会影响到原来的值
-      ```
-      let obj = {
-         name: '111',
-         age: '111'
-      }
-
-      let obj1 = obj
-
-      // ==> 通过传参也会影响原来的值
-      const getObj = (newObj) => {
-         newObj.newAge = '333'
-         return newObj
-      }
-      console.log('getObj', getObj(obj1))
-      console.log('after', obj) // 有newAge333
-
-      // ==> 赋值成一个原始值则不会影响到原来的值 
-       const getObj = (newObj) => {
-         newObj = 333
-         return newObj
-      }
-      console.log('getObj', getObj(obj1)) // 333
-      console.log('after', obj) // {name: '111', age: '111'}
-      ```
-   2. for, map, foreach循环操作原始值不会影响原来的值, 操作引用值影响原来的值
-      - 操作原始值
-         ```
-            const arr = [1, 2, 3];
-            console.log(arr); // 1, 2, 3
-            const result = arr.map(item => {
-               item = 3;  // 操作原始值
-               return item
-            });
-            console.log(result) // 3, 3, 3
-         ```
-      - 操作引用值
-         ```
-            const arr1 = [{age: 1}, {age: 2}, {age: 3}]
-            console.log(arr1); // [{age: 1}, {age: 1}, {age: 1}]
-            const result1 = arr1.map(item => {
-               item.age = 1;  // 操作引用值
-               return { ...item }
-            });
-            console.log(result1) // [{age: 1}, {age: 1}, {age: 1}]
-         ```
-      - 展开操作原始值, 覆盖值(**不会影响原来的值**)
-         ```
-            const arr1 = [{ age: 1 }, { age: 2 }, { age: 3 }]
-            console.log(arr1); // [{age: 1}, {age: 2}, {age: 3}]
-            const result1 = arr1.map(item => {
-               return {
-                  ...item,
-                  age: 1
-               }
-            });
-            console.log(result1) // [{age: 1}, {age: 1}, {age: 1}]
-         ```
-- 循环数组时, item判断下是否为空为空时不操作, 防止假值不是false操作对象报错(false.name === undefined, 其他的假值.name报错)
    ```
    const resultColunms =  [
       {
