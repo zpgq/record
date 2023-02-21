@@ -45,6 +45,7 @@
         setState((prev) => ({count: prev + 1})) // 2
         setState((prev) => ({count: prev + 1})) // 3
        ```
+
 - 区别
     1. class的state会浅合并(assign), useState不会
        ```
@@ -74,7 +75,7 @@
         }))
         
        ```
-- 异步同步
+       
 - 注意项
     1. 改变成一个固定的对象会无限触发(**通过浅比较(Object.is)对比是否需要重新渲染**)
         ```
@@ -85,7 +86,7 @@
         3. 当前count为{name: 1}, 改成{name: 1}
             ....
         ```
-    2. 当state为一个引用值需要修改值时, 直接修改可能导致无法更新, 赋值给一个新变量在修改即可正常(**未赋值给一个新变量Object.is为true**)
+    2. 当state为一个引用值需要修改值时, 直接修改可能导致无法更新, 赋值给一个新变量在修改即可正常(**未赋值给一个新变量Object.is为true(浅拷贝后操作深层数据后, 深层数据值作为依赖依据会更新)**)
         ```
         const [obj, setObj] = useState({name: 'before'})
 
@@ -99,7 +100,7 @@
         )
 
         // ==> 赋值给一个新变量, 在修改, 更新
-         const handleClick = () => {
+        const handleClick = () => {
             const newObj = { ...obj }
             newObj.name = 'after'
             setObj(obj)
@@ -107,9 +108,22 @@
         return (
             obj.name // 'after'
         )
-
-
         ```
+
+        // ==> 浅拷贝后操作深层数据后, 深层数据值作为依赖依据会更新
+        const [count, setCount] = useState(a: {b: 1})
+        const handleClick = useCallback(() => {
+            const newCount = {...count}
+            console.log('newCount', newCount) // a: {b: 4}
+            console.log('count', count) // a: {b: 4}
+            newCount.a.b = 4
+            setCount(newCount)
+        }, [count.a.b])
+
+        return (
+            {count.a.b} // 点击后变成4
+        )
+
     3. 原生事件直接打印状态为初始值不变化, 但在render内变化(**状态回调会返回上一次的值==>变化**)
         ```
         const [count, setCount] = useState(0)
@@ -180,6 +194,7 @@
     }
     <input type="text" name="text" value={this.state.text} />
     ```
+
 - 非受控组件
 表单中的value会覆盖dom节点的值, 非受控组件推荐使用defaultValue, 不会造成 DOM 上值的任何更新。**defaultValue**
     ```
@@ -194,7 +209,8 @@
     // ==> 父组件声明ref并使用
     const getSonRef = useRef();
     const handleClick = () => {
-        ref.current.getData
+        // ==> 触发时机
+        ref.current.getData()
     }
 
     // ==> 子组件接受ref声明函数执行子组件的函数
@@ -208,7 +224,51 @@
     }))
     ```
 
-## 规范/小技巧
+- 父组件获取子组件的函数, 函数触发时机在子函数身上(**高阶函数**)
+    ```
+    const CommentListWithSubscription = withSubscription(
+        CommentList,
+        (DataSource, props) => DataSource.getComments(props.id)
+    );
+
+    function withSubscription(WrappedComponent, selectData) {
+        // ...并返回另一个组件...
+        return class extends React.Component {
+            constructor(props) {
+            super(props);
+            this.handleChange = this.handleChange.bind(this);
+            this.state = {
+                // ==> 触发时机
+                data: selectData(DataSource, props) 
+            };
+            }
+
+            componentDidMount() {
+                // ...负责订阅相关的操作...
+                DataSource.addChangeListener(this.handleChange);
+            }
+
+            componentWillUnmount() {
+                DataSource.removeChangeListener(this.handleChange);
+            }
+
+            handleChange() {
+                this.setState({
+                    // ==> 触发时机
+                    data: selectData(DataSource, this.props)
+                });
+            }
+
+            render() {
+                // ... 并使用新数据渲染被包装的组件!
+                // 请注意，我们可能还会传递其他属性
+                return <WrappedComponent data={this.state.data} {...this.props} />;
+            }
+        };
+    }
+    ```
+
+## 规范
 - hooks
     - 组件封装
         1. 小驼峰封装组件**组件是封装到当前组件内**
@@ -219,38 +279,59 @@
             ```
             <List />
             ```
-    - 使用useCallback的时候可以适当利用useState回调写法, 以防止改变依赖数据导致未更新数据
-        ```
-        const toggleModal = useCallback(() => {
-            setState(prevState => ({
-                ...prevState,
-                modalOpen: !prevState.modalOpen
-            }))
-        }, [])
-        ```
-    - useState中利用setCount回调函数, 修改原有的值不会受useMemo, useCallback的影响, 而直接在外面修改count会使用缓存中的值0, 导致一直是1
-        ```
-        const [count, setCount] = useState(0)
+            
+## jsx
+- 假值(0会被渲染, 其他假值则不会被渲染出来)
 
-        // ==> 使用回调
-        const handleClick = useCallback(() => {
-            console.log('count', count) // 0
-            setCount((prevCount: any) => {
-                console.log('prevCount', prevCount) // 累加1, 2, 3
-                return prevCount + 1
-            })
-        }, [])
 
-        // ==> 直接在外面修改state
-        const handleClick = useCallback(() => {
-            console.log('count', count) // 一直是0
-            const newCount = count + 1 // 一直是1
-            setCount(newCount) 
-        }, [])
 
-        const renderButon = useMemo(() => {
-            return (
-                <div onClick={handleClick}>点击获取count</div>
-            )
-        }, []) `
+## 总结
+- react的依赖都是使用的Object.is进行浅比较(第一层), 故数据最好扁平化, 尽量不要超过2层
+
+- react改变数据最好不要修改原数据, 因为1. 在很多api内可以拿到上一次的数据且将其用于比较。 2. 直接修改原数据可能造成不更新(**useState**)
+
+- useState中利用setCount回调函数, 修改原有的值不会受useMemo, useCallback的影响, 而直接在外面修改count会使用缓存中的值0, 导致一直是1
+    ```
+    const [count, setCount] = useState(0)
+
+    // ==> 使用回调
+    const handleClick = useCallback(() => {
+        console.log('count', count) // 0
+        setCount((prevCount: any) => {
+            console.log('prevCount', prevCount) // 累加1, 2, 3
+            return prevCount + 1
+        })
+    }, [])
+
+    // ==> 直接在外面修改state
+    const handleClick = useCallback(() => {
+        console.log('count', count) // 一直是0
+        const newCount = count + 1 // 一直是1
+        setCount(newCount) 
+    }, [])
+
+    const renderButon = useMemo(() => {
+        return (
+            <div onClick={handleClick}>点击获取count</div>
+        )
+    }, []) 
+    ```
+
+- 高阶组件需要注意ref, key, 容器组件属性(高阶组件不建议直接修改传入组件, 一般通过组合方式实现功能如下)
+        ```
+        function logProps(WrappedComponent) {
+            return class extends React.Component {
+                componentDidUpdate(prevProps) {
+                    console.log('Current props: ', this.props);
+                    console.log('Previous props: ', prevProps);
+                }
+                render() {
+                    // 过滤掉非此 HOC 额外的 props，且不要进行透传
+                    const { extraProp, ...passThroughProps } = this.props;
+
+                    // 将 input 组件包装在容器中，而不对其进行修改。Good!
+                    return <WrappedComponent {...this.passThroughProps} />;
+                }
+            }
+        }
         ```

@@ -36,6 +36,7 @@
    // 1. 对象能通过__proto__或者getPrototypeOf来访问原型, 函数只可以通过prototype来访问原型
    // 2. getPrototypeOf只能访问到通过__proto__和setPrototypeOf设置的的属性, 不能访问到通过prototype设置的属性
    ```
+
 - 属性在实例对象身上、构造函数身上、构造函数原型身上说明
    1. 实例对象(里面的方法可以通过实例对象访问)
      - 构造函数this.属性
@@ -85,6 +86,7 @@
    let son = new Son()
    ```
    缺点: 1.父函数的实例属性也会继承 2.无法传递参数
+
 - 借用构造函数
    ```
    function Father() {}
@@ -94,6 +96,7 @@
    let son = new Son()
    ```
    缺点: 无法继承父函数原型上的属性方法, 多执行了一个函数
+
 - 组合式继承
    ```
    function Father() {}
@@ -102,6 +105,7 @@
    }
    Son.prototype = new Father() 
    ```
+
 - 圣杯模式(借用一个构造函数充当中间件)
    ```
    function Father() {}
@@ -126,6 +130,7 @@
    const p2 =  new Promise((resolve, reject) => { resolve('成功状态传递的数据') })
    p2.then(res => console.log(res))
    ```
+
 - promise传递函数
    ```
    function myExecutorFunc() {
@@ -174,12 +179,15 @@
    false && console.log("a") // 控制台未打印
    false || console.log("a") // 控制台打印出a
    ```
+
 - 区分数据类型方法
    1. 区分数组和对象
       - isArray( [] )、Object.prototype.toString.call( [] )、[] instansof Array
+
 - js精度问题
    1. 字符串超过16位转成数字会失去精度(往后的都是0)**通过JSON.parse或者Number等等**
    2. 0.1 + 0.2 != 0.3
+   
 - 类型转化
    1. 类数组转化成数组Array.from()**转化后才可以使用数组方法**
       ```
@@ -192,13 +200,14 @@
       // 数组 ==>
       const arr = Array.from(obj)
       ```
-   2. 使用Number转化, 需先使用取反!!转化成boolea类型, 防止出现NaN(**Number(undefined === NaN)**)
+   2. 使用Number转化, 需先使用取反!!转化成boolea类型, 防止出现NaN(**Number(undefined) === NaN**)
       ```
       const validFlag = undefined;
       Number(!!validFlag)
       ```
 - 类似方法说明
    1. 处理字符推荐使用substring, slice具有有类似效果
+
 - 原始值(复制堆内值, 不会影响原来的值)和引用值(复制栈的地址, 指向相同影响原来的值) 
    1. 引用值引用复制地址指向相同会影响原来的值(包括通过传参使用), 若赋值成一个原始值则不会影响到原来的值
       ```
@@ -224,8 +233,6 @@
       }
       console.log('getObj', getObj(obj1)) // 333
       console.log('after', obj) // {name: '111', age: '111'}
-
-
       ```
    2. for, map, foreach循环操作原始值不会影响原来的值, 操作引用值影响原来的值
       - 操作原始值
