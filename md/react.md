@@ -216,7 +216,7 @@
     ```
 
 ## 组件通讯
-- 父组件获取子组件的函数, 函数触发时机在父函数上(**useImperativeHandle**)
+- 父组件获取子组件的函数, 函数触发时机在父函数上(**hooks useImperativeHandle, class组件可以直接访问实例**)
     ```
     // ==> 父组件声明ref并使用
     const getSonRef = useRef();
@@ -234,6 +234,13 @@
             getData()
         }
     }))
+
+    // ==> 组组件为class组件时
+    class Son extends React.component {
+        getData = () => {
+             console.log('子函数')
+        }
+    }
     ```
 
 - 父组件获取子组件的函数, 函数触发时机在子函数身上(**高阶函数**)
