@@ -190,6 +190,34 @@
    console.log('getObj', getObj(obj1)) // 333
    console.log('after', obj) // {name: '111', age: '111'}
    ```
+
+- 浅复制引用值操作第一层不会影响原来的值, 操作第二层及其他层会影响原来的值(**从第N层浅复制, 第N层就算第一层**)
+   ```
+      const obj = {
+            name: 111,
+            frends: {
+               name: 222,
+            }
+      }
+      // ==> 浅复制引用值操作第一层不会影响原来的值
+      const copyObj = { ...obj }
+      copyObj.name = 333
+      console.log('copyObj', copyObj) // { name: 333, frends: { name: 222 } }
+      console.log('obj', obj) // { name: 111, frends: { name: 222 } }
+
+      // ==> 操作第二层及其他层会影响原来的值
+      const copyObj = { ...obj }
+      copyObj.frends.name = 333
+      console.log('copyObj', copyObj) // { name: 111, frends: { name: 333 } }
+      console.log('obj', obj) // { name: 111, frends: { name: 333 } }
+
+      // 从第N层浅复制, 第N层就算第一层 ==> 
+      const copyFrends = { ...obj.frends };
+      copyFrends.name = 333
+      console.log('copyFrends', copyFrends) // {name: 333}
+      console.log('obj', obj) // { name: 111, frends: { name: 222 }}
+   ```
+
 - for, map, foreach循环操作原始值不会影响原来的值, 操作引用值影响原来的值
    1. 操作原始值
       ```
