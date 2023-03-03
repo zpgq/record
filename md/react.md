@@ -50,15 +50,29 @@
        ```
        
 - 注意项
-    1. 改变成一个固定的对象会无限触发(**通过浅比较(Object.is)对比是否需要重新渲染**)
+    1. 改变成一个固定的对象会无限触发re-render, 若改变成一个原始值则只会触发一次re-render(通过浅比较(Object.is)对比上一次的值判断是否需要重新渲染)**每次setState都是重新声明一个变量覆盖原有的变量, 故导致改变成一个固定对象无限re-render**
         ```
-        const [count, setCount] = useState(0);
-        () => setCount({name: 1})
-        1. 当前count为0, 改成{name: 1};
-        2. 当前count为{name: 1}, 改成{name: 1}
-        3. 当前count为{name: 1}, 改成{name: 1}
-            ....
+        // ==> 改变成一个固定的对象会无限触发re-render
+        const [person, setPerson] = useState({age: 0});
+        const handleClick = () => setPerson({age: 1})
+        return (
+            <div onClick={handleClick}>
+                { Math.random() }
+                { person.age }
+            </div>
+        )
+
+        // ==> 改变成一个固定的对象会无限触发re-render
+        const [person, setPerson] = useState(0);
+        const handleClick = () => setPerson(1)
+        return (
+            <div onClick={handleClick}>
+                { Math.random() }
+                { person }
+            </div>
+        )
         ```
+    
     2. 当state为一个引用值需要修改值时, 直接修改可能导致无法更新, 赋值给一个新变量在修改即可正常(**未赋值给一个新变量Object.is为true(浅拷贝后操作深层数据后, 深层数据值作为依赖依据会更新)**)
         ```
         const [obj, setObj] = useState({name: 'before'})
@@ -108,6 +122,7 @@
             setCount(prevState => 1) 
         })
         ```
+    
     4. 在setState内会被缓存(即使是默认值也会被缓存), 无修改不会重新渲染(diff对比无变化)**context的Provider直接赋值总是新的值会重新渲染, 可以利用state初始值会被缓存的特性优化context防止过多渲染**
         ```
         const [count, setCount] = useState<any>(0);
