@@ -5,6 +5,3 @@
 ## 2.1 全局包安装后无法使用思路
    1. 先yarn global list查看全局包是否安装成功
    2. 安装成功则yarn global bin查看包的路径, 复制将其设置在系统环境变量Path中
-
-# 3 vuex
-## 3.1 vuex使用 dispatch('user/getInfo')  ==> store中调用user模块action的getInfo方法
