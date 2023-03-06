@@ -48,3 +48,6 @@
    1. flex-grow**剩余扩展比**
    2. flex-shrink**超过收缩比**
    3. flex-basis**初始长度**
+
+- flex调整元素自身属性**align-self**
+   1. align-self: flex-end; // 副轴从后面开始
