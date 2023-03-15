@@ -273,11 +273,22 @@
 ## 总结
 - 循环数组时, item判断下是否为空为空时不操作, 防止假值不是false操作对象报错(false.name === undefined, 其他的假值.name报错)
 
-- 运算符问题问题
+- 运算符且(&&), 或(||)
    ```
    false && console.log("a") // 控制台未打印
    false || console.log("a") // 控制台打印出a
    ```
+
+- ++**重新赋值操作count = count + 1, 是一个表达式**、+1**未赋值, 原有的值未改变**
+   ``
+      let count = 0;
+
+      count + 1
+      console.log(count) // 0
+
+      count ++
+      console.log(count); // 1 ...累加
+   ``
 
 - 区分数据类型方法
    1. 区分数组和对象
