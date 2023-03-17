@@ -1,3 +1,33 @@
+## vue注意项总结
+- vue2在绑定事件中直接改变data中未定义的属性时更新会失效, 若想使用正常更新需使用$set(注意: 只要先.age在$set设置data上未定义的属性, 那么$set也无法加入响应式)
+  ```
+  data () {
+    return {
+      obj: {
+        name: 111
+      }
+    }
+  }
+
+  // ==> 未收集到age, 视图未更新
+  handleClick () {
+    this.obj.age = 333
+  }
+
+  // ==> 使用$set加入响应式进而会更新视图
+  handleClick () {
+    this.$set(this.obj, 'age', 333);
+  }
+
+  // ==> 只要先.age在$set设置data上未定义的属性, 那么$set也无法加入响应式, 无法更新视图
+  handleClick () {
+    this.obj.age = 333 
+    this.$set(this.obj, 'age', 333);
+  }
+  ```
+
+- 
+
 ## Vue的created生命周期异步时执行顺序问题
 1. 异步请求数据, 传递到子组件, 子组件无法拿到props(第二次轮训才能拿到数据)  ==> 可在子组件上加上v-if, 有数据的时候才渲染子组件。
 
