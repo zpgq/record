@@ -13,7 +13,8 @@
      ```
    - vw适配 ==> 都是相对于视口宽度来计算的( 1vw === 当前适配设备宽度 * 0.01 )
       - 可以利用postcss-px-to-viewport插件进行计算
-## 1.2 BFC/IFC
+
+## 1.2 重点概念总结
 ### 1.2.1 BFC
 - 触发条件
    1. overflow不为visible
@@ -24,12 +25,79 @@
    1. BFC内浮动元素参与计算(解决了margin塌陷)
    2. BFC内兄弟元素垂直margin会重叠
    3. BFC内独立计算不受外部元素影响(两个元素浮动margin不会合并)
+
 ## 1.2.2 IFC
 - 触发条件
    一个块级元素中仅包含内联级别元素
 - 规则
    1. 垂直方向的margin不生效
    2. text-align、vertical-align属性生效
+
+## 1.2.3 层叠水平
+- 顺序
+   1. 层叠上下文
+   2. 负z-index
+   3. block块状水平盒子
+   4. float浮动盒子
+   5. inline-inline-block水平盒子
+   6. z-index: auto/z-index: 0
+   7. 正z-index
+
+- 形成层叠上下文情况
+   1. 根元素html
+   2. 定位absolute|relative, 且z-index不为auto
+   3. 定位为fixed|sticky
+   4. display为flex/inline-flex, 且z-index不为auto
+   5. opacity值小于1
+   6. transform值不为none
+   ...
+
+- 实例
+   ```
+   .container {
+      position: relative;
+      background: #ddd;
+      margin-top: 10px;
+   }
+
+   .container>div {
+      width: 200px;
+      height: 200px;
+      line-height: 200px;
+      color: #333;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      border: 1px dashed #e6e6e6;
+   }
+
+   .float {
+      float: left;
+      background-color: deeppink;
+   }
+
+   /* inline-blcok元素总是在上面 */
+   .inline-block {
+      display: inline-block;
+      background-color: yellowgreen;
+      margin-left: -100px;
+   }
+
+   /* 形成层叠上下文后会看到, inline-block 的 div 不再一定叠在 float 的 div 之上，而是和 HTML 代码中 DOM 的堆放顺序有关，后添加的 div 会 叠在先添加的 div 之上, 即#div2总是在#div1之上 */
+   .container2>div {
+      opacity: 0.9;
+   }
+
+   <div class="container container2">
+      <div class="inline-block">#div1 inline-block</div>
+      <div class="float"> #div2 float:left</div>
+   </div>
+   <div class="container container2">
+      <div class="float"> #div1 float:left</div>
+      <div class="inline-block">#div2 inline-block</div>
+    </div>
+    
+   ```
 
 ## 1.3 规范
 - 标签嵌套问题
