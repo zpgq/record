@@ -171,8 +171,8 @@
 
     return (
         <>
-        <h1 ref={measuredRef}>Hello, world</h1>
-        <h2>The above header is {Math.round(height)}px tall</h2>
+            <h1 ref={measuredRef}>Hello, world</h1>
+            <h2>The above header is {Math.round(height)}px tall</h2>
         </>
     );
     }
@@ -209,7 +209,7 @@
             return (
                 <div onClick={handleClick}>点击获取count</div>
             )
-        }, []) 
+        }, [])
         ```
 
 ## 受控和非受控组件
@@ -317,8 +317,6 @@
 ## jsx
 - 假值(0会被渲染, 其他假值则不会被渲染出来)
 
-
-
 ## 总结
 - react改变数据最好不要修改原数据, 因为1. 在很多api内可以拿到上一次的数据且将其用于比较。 2. 直接修改原数据可能造成不更新(**useState**)
 - 高阶组件需要注意ref, key, 容器组件属性(高阶组件不建议直接修改传入组件, 一般通过组合方式实现功能如下)
@@ -339,3 +337,9 @@
             }
         }
         ```
+
+## fiber
+1. 调度器
+2. 创建列队任务
+3. 更新fiber
+4. 处理更新列队
