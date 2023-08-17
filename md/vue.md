@@ -123,3 +123,8 @@ $emit => 事件, $on绑定事件
 1. path: '/detail/:id' 从/detail/1切换到/detail/2组件不会触发变化
   - 路由守卫检测变化beforeRoutePpdata
   - 通过watch监听$route
+
+2. 通过不缩写的形式v-bind可以给组件绑定多个属性, 常用于子组件需要绑定父组件配置的多个属性
+  ```
+  v-bind={type: 'number', value: 111}
+  ```
