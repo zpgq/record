@@ -31,7 +31,7 @@
             console.log("防抖")
         }, 500)
 
-        // 节流
+        // 节流(利用闭包特性记住上一次的值)
         // 每次滚动判断有无定时器, 无定时器延迟执行, 执行完后清除定时器
         function throttle(fn, delay) {
             let timer = null;
