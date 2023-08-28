@@ -271,7 +271,16 @@
    ```
 
 ## 总结
-- 循环数组时, item判断下是否为空为空时不操作, 防止假值不是false操作对象报错(false.name === undefined, 其他的假值.name报错)
+- 假值总结(**undefined, null, false, 0, NaN, ''**)
+   1. 循环数组时, item判断下是否为空为空时不操作, 防止假值不是false操作对象报错(false.name === undefined, 其他的假值.name报错)
+   2. 值为null时解构设默认值值为null, 但undefined解构设默认值时值
+      ```
+      const obj = {name: null}
+      const { name = {} } = obj // 打印name为null
+
+      const obj = {name: undefined}
+      const { name = {} } = obj // 打印name为{}
+      ```
 
 - 运算符且(&&), 或(||)
    ```
