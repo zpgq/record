@@ -252,6 +252,19 @@
          console.log(result1) // [{age: 1}, {age: 1}, {age: 1}]
       ```
 
+## 模块(require)(import)
+- es6的模块(export, import)和(export default, import), commonjs模块(module.exports, require)和(exports, require)
+  1. es6模块
+   - import导入的变量相当于const导入, 如果导入执行另一个地址会报错
+      ``
+      import testName from './test'
+      testName = 'aaa'  // 报错
+      ``
+  2. commonjs模块
+   - 始终导出一个对象, 且以module.exports导出的执行为基准
+  3. 两者相同点
+     - 导出为一个对象时, 直接修改值会影响原来的值
+
 ## 1.8 类型转换
 - 类数组转化成数组Array.from()**转化后才可以使用数组方法**
    ```
