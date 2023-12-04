@@ -34,7 +34,7 @@
    2. text-align、vertical-align属性生效
 
 ## 1.2.3 层叠水平
-- 顺序
+- 顺序(同层若果跌在一起, 后面的覆盖前面的, 见下面实例)
    1. 层叠上下文
    2. 负z-index
    3. block块状水平盒子
@@ -43,7 +43,7 @@
    6. z-index: auto/z-index: 0
    7. 正z-index
 
-- 形成层叠上下文情况
+- 形成层叠上下文情况(在负的z-index下面, 每个层叠上下文完全独立于它的兄弟元素，每个层叠上下文是自包含的：当一个元素的内容发生层叠后，该元素就会作为整体将会在父级叠上下文中按顺序进行层叠)
    1. 根元素html
    2. 定位absolute|relative, 且z-index不为auto
    3. 定位为fixed|sticky
@@ -76,14 +76,14 @@
       background-color: deeppink;
    }
 
-   /* inline-blcok元素总是在上面 */
+   /* 1. inline-blcok元素总是在上面 ==> */
    .inline-block {
       display: inline-block;
       background-color: yellowgreen;
       margin-left: -100px;
    }
 
-   /* 形成层叠上下文后会看到, inline-block 的 div 不再一定叠在 float 的 div 之上，而是和 HTML 代码中 DOM 的堆放顺序有关，后添加的 div 会 叠在先添加的 div 之上, 即#div2总是在#div1之上 */
+   /* 形成层叠上下文后会看到，和 HTML 代码中 DOM 的堆放顺序有关，后添加的 div 会 叠在先添加的 div 之上, 即#div2总是在#div1之上 ==> */
    .container2>div {
       opacity: 0.9;
    }

@@ -13,8 +13,7 @@
         <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     </div>
     <script>
-        // 防抖
-        // 每次点击都将上一个定时器清除, 并且延迟执行
+        // 防抖, 每次点击都将上一个定时器清除, 并且延迟执行
         function debounce(callback, wait) {
             var timer = null;
             return function () {
@@ -33,18 +32,33 @@
 
         // 节流(利用闭包特性记住上一次的值)
         // 每次滚动判断有无定时器, 无定时器延迟执行, 执行完后清除定时器
+        // function throttle(fn, delay) {
+        //     let timer = null;
+        //     return function (...args) {
+        //         if (!timer) {
+        //             timer = setInterval(function () {
+        //                 clearInterval(timer)
+        //                 fn(...args)
+        //                 timer = null
+        //             }, delay)
+        //         }
+        //     }
+        // }
+
+        // 节流, 滚动延迟执行且每次执行后重置
         function throttle(fn, delay) {
             let timer = null;
             return function (...args) {
-                if (!timer) {
-                    timer = setInterval(function () {
-                        clearInterval(timer)
-                        fn(...args)
-                        timer = null
-                    }, delay)
+                if (timer) {
+                    return;
                 }
+                timer = setTimeout(function () {
+                    fn(...args);
+                    timer = null;
+                }, delay)
             }
         }
+
         window.onscroll = throttle(function () {
             console.log("节流");
         }, 1000)

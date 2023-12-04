@@ -19,12 +19,19 @@
         }
         // Object.entries将对象转换成可迭代对象
         // 原始值直接return、引用值递归循环直到为原始值
-        function deepClone(object) {
-            let obj = object instanceof Array ? [] : {}
-            for (const [key, val] of Object.entries(object)) {
-                obj[key] = typeof val == "object" ? deepClone(val) : val
+       // 深度克隆
+        function deepClone(obj) {
+            var target = Array.isArray(obj) ? [] : {}
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (typeof obj[key] === "object" && obj[key] !== null) {
+                        target[key] = deepClone(obj[key])
+                    } else {
+                        target[key] = obj[key]
+                    }
+                }
             }
-            return obj
+            return target
         }
         var target = deepClone(obj)
     </script>
