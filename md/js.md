@@ -161,8 +161,34 @@
 
   console.log('1')
 
-  ==> 1, 2, 3, 4， 5
+  // ==> 1, 2, 3, 4， 5
+
+  // 主线程内**所有**微任务微任务立即执行示例 ==>
+  setTimeout(() => {
+    console.log('宏任务')
+   });
+
+   new Promise(resolve => {
+      resolve('')
+   }).then(res => {
+      console.log('1')
+   }).then(res => {
+      console.log('2')
+   })
+
+   new Promise(resolve => {
+      resolve('')
+   }).then(res => {
+      console.log('3')
+   }).then(res => {
+      console.log('4')
+   })
+
+   console.log('主进程')
+   // ==> 主进程, 1, 3, 2, 4, 宏任务
   ```
+
+
 
 ## 1.7 原始值(复制堆内值, 不会影响原来的值)引用值(复制栈的地址, 指向相同影响原来的值)
 - 引用值引用复制地址指向相同会影响原来的值(包括通过传参使用), 若赋值成一个原始值则不会影响到原来的值

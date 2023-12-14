@@ -1,8 +1,11 @@
 .DS_Store
-
+# 当前文件
 demo.html
 demo.js
 demo.ts
 demo.css
-demo
-node_modules
+# 当前文件夹下的所有文件
+demo/
+node_modules/
+vue3-notes-demo/
+react-notes-demo/
