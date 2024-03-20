@@ -1,10 +1,13 @@
-## 1.1 webpack优化
+## 1.1 webpack 优化
+
 - 概念 一般从优化打包速度、优化产出代码两方面去优化
+
 1. 多入口
-多个htmlWebpackPlugin
-2. 抽离css
-MiniCssExtractPlugin
+   多个 htmlWebpackPlugin
+2. 抽离 css
+   MiniCssExtractPlugin
 3. 分割代码
+
 ```
 optimization: {
     spliteChunks: {
@@ -31,19 +34,21 @@ htmlWebpackPlugin({
     chunks: ['index', 'vendor', 'common'] // 分割代码后需要引入对应的chunk
 })
 ```
+
 4. 懒加载
-dymic
-5. 出口output filename使用hashcontent
-6. HappyPack开启多进程打包
+   dymic
+5. 出口 output filename 使用 hashcontent
+6. HappyPack 开启多进程打包
+
 ```
 new HappyPack({
     id: 'bable',
     loaders: ['bable-loader?cacheDirectory]
 })
 ```
-注意：小项目开启多线程会减低速度(进程开销)
-7. ParalleUglifyPlugin压缩js
-8. 使用dll优化
+
+注意：小项目开启多线程会减低速度(进程开销) 7. ParalleUglifyPlugin 压缩 js 8. 使用 dll 优化
+
 ```
 // 打包dll DllPlugin=>
 // webpack.dll.js =>
@@ -80,6 +85,7 @@ plugins: [
 ```
 
 ## 1.2 概念
-1. modeule 模块 一切皆模块 如js、css、图片等等每个文件都是一个模块
-2. chunk 多模块合并 如entry import() splitChunks
+
+1. modeule 模块 一切皆模块 如 js、css、图片等等每个文件都是一个模块
+2. chunk 多模块合并 如 entry import() splitChunks
 3. bundle 最终输出文件
